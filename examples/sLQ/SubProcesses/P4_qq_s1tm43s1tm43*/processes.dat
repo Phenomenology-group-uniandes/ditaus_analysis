@@ -1,0 +1,10 @@
+1       d d~ > s1tm43 s1tm43*
+mirror  d~ d > s1tm43 s1tm43*
+2       s s~ > s1tm43 s1tm43*
+mirror  s~ s > s1tm43 s1tm43*
+3       d s~ > s1tm43 s1tm43*
+mirror  s~ d > s1tm43 s1tm43*
+4       s d~ > s1tm43 s1tm43*
+mirror  d~ s > s1tm43 s1tm43*
+5       u u~ > s1tm43 s1tm43*,c c~ > s1tm43 s1tm43*
+mirror  u~ u > s1tm43 s1tm43*,c~ c > s1tm43 s1tm43*
