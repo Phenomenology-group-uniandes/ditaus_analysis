@@ -1,4 +1,5 @@
 import model sm-no_b_mass
+
 generate p p > t t~ @0 
 output PATH_TO_TTBAR -nojpeg
 
@@ -23,6 +24,4 @@ add process p p > w- j @1
 add process p p > w- j j @2
 output PATH_TO_SW_JET -nojpeg
 
-#generate p p > z b @0 
-#output PATH_TO_ZB -nojpeg
 
