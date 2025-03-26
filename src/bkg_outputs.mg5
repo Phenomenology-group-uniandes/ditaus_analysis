@@ -1,0 +1,28 @@
+import model sm-no_b_mass
+generate p p > t t~ @0 
+output PATH_TO_TTBAR -nojpeg
+
+generate p p > t j @0 
+add process p p > t~ j @0
+output PATH_TO_STOP_JET -nojpeg
+
+generate p p > t w- @0 
+add process p p > t~ w+ @0
+output PATH_TO_STOP_W  -nojpeg
+
+generate p p > z @0 
+add process p p > z j @1
+add process p p > z j j @2
+output PATH_TO_SZ_JET -nojpeg
+
+generate p p > w+ @0 
+add process p p > w+ j @1
+add process p p > w+ j j @2
+add process p p > w- @0 
+add process p p > w- j @1
+add process p p > w- j j @2
+output PATH_TO_SW_JET -nojpeg
+
+#generate p p > z b @0 
+#output PATH_TO_ZB -nojpeg
+
