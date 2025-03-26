@@ -1,5 +1,0 @@
-P4_gg_s1tm43s1tm43*
-P4_qq_s1tm43s1tm43*
-P2_gq_taps1tm43
-P3_gq_tams1tm43*
-P1_qq_taptam

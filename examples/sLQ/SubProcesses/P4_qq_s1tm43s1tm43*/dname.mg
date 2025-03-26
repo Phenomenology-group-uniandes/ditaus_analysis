@@ -1,1 +1,0 @@
-DIRNAME=P4_qq_s1tm43s1tm43*
