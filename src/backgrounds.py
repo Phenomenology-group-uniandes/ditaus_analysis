@@ -34,8 +34,8 @@ bkg_paths_1 = {
 }
 
 bkg_paths_3 = {
-    "PATH_TO_SZ_JET": "/disco3/BKG_SM_new/z_jets",
     "PATH_TO_SW_JET": "/disco3/BKG_SM_new/w_jets",
+    "PATH_TO_SZ_JET": "/disco3/BKG_SM_new/z_jets",
 }
 
 all_paths = bkg_paths_1.copy()
