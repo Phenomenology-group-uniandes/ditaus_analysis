@@ -5,7 +5,8 @@ from subprocess import Popen
 
 create_outputs = False
 
-mg5_path="/Collider/MG5_aMC_v3_5_8"
+mg5_path = "/Collider/MG5_aMC_v3_5_8"
+
 
 def change_template(template, paths):
     with open(template, "r") as f:
@@ -68,9 +69,7 @@ if create_outputs:
     run_template_outputs = os.path.join(current_folder, "outputs", "bkg_outputs_run.mg5")
     with open(run_template_outputs, "w") as new_f:
         new_f.write("\n".join(lines1))
-    Popen(
-        [os.path.join(mg5_path, "bin", "mg5_aMC"), run_template_outputs]
-    ).wait()
+    Popen([os.path.join(mg5_path, "bin", "mg5_aMC"), run_template_outputs]).wait()
 
 
 bkg_launch_files = {}
@@ -78,10 +77,12 @@ bkg_launch_files = {}
 for bkg in bkg_paths.keys():
     dict1 = cards_paths.copy()
     dict1["PATH_TO_OUTPUT"] = bkg_paths[bkg]
-    if "top_jet" in dict1["PATH_TO_OUTPUT"]:
+    if "_jets" in dict1["PATH_TO_OUTPUT"]:
         run_card = dict1["PATH_TO_RUN_CARD"]
-        run_card.replace("run_card.dat", "background_run_cards/run_card_top_jet.dat")
+        run_card.replace("run_card_w_jet_match.dat", "background_run_cards/run_card_top_jet.dat")
         dict1["PATH_TO_RUN_CARD"] = run_card
+    else:
+        pass
     lines2 = change_template(template_launch, dict1)
     bkg_name = bkg_paths[bkg].split("/")[-1]
     run_template_launch = os.path.join(current_folder, "outputs", f"bkg_launch_run_{bkg_name}.mg5")
@@ -94,6 +95,4 @@ n_runs = {"ttbar": 4, "top_w": 1, "top_jet": 1, "z_jets": 7, "w_jets": 8}
 
 for bkg in bkg_launch_files.keys():
     for i in range(n_runs[bkg]):
-        Popen(
-            [os.path.join(mg5_path, "bin", "mg5_aMC"), bkg_launch_files[bkg]]
-        ).wait()
+        Popen([os.path.join(mg5_path, "bin", "mg5_aMC"), bkg_launch_files[bkg]]).wait()
