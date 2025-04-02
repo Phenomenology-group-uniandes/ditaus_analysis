@@ -60,8 +60,6 @@ cards_paths = {
 
 cards_paths = {key: os.path.join(current_folder, value) for key, value in cards_paths.items()}
 
-########## /Collider/MG5_aMC_v3_5_8/bin/mg5_aMC /home/a.parrao/ditaus_analysis/outputs/bkg_launch_run_top_jet.mg5
-
 # Create outputs
 
 if create_outputs:
