@@ -1,5 +1,5 @@
 launch PATH_TO_OUTPUT -i
-    multi_run 10 --nb_core=2
+    multi_run 10 --nb_core=3
         shower=Pythia8
         detector=Delphes
         analysis=OFF
