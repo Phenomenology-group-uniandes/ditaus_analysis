@@ -1,4 +1,4 @@
-# /bin/python3 /home/a.parrao/ditaus_analysis/src/backgrounds.py
+# python3 /home/a.parrao/ditaus_analysis/src/backgrounds.py
 
 import os
 from subprocess import Popen
@@ -59,7 +59,7 @@ cards_paths = {
 
 cards_paths = {key: os.path.join(current_folder, value) for key, value in cards_paths.items()}
 
-########## /Collider/MG5_aMC_v3_5_7/bin/mg5_aMC /home/a.parrao/ditaus_analysis/outputs/bkg_launch_run_top_jet.mg5
+########## /Collider/MG5_aMC_v3_5_8/bin/mg5_aMC /home/a.parrao/ditaus_analysis/outputs/bkg_launch_run_top_jet.mg5
 
 # Create outputs
 
@@ -78,6 +78,10 @@ bkg_launch_files = {}
 for bkg in bkg_paths.keys():
     dict1 = cards_paths.copy()
     dict1["PATH_TO_OUTPUT"] = bkg_paths[bkg]
+    if "top_jet" in dict1["PATH_TO_OUTPUT"]:
+        run_card = dict1["PATH_TO_RUN_CARD"]
+        run_card.replace("run_card.dat", "background_run_cards/run_card_top_jet.dat")
+        dict1["PATH_TO_RUN_CARD"] = run_card
     lines2 = change_template(template_launch, dict1)
     bkg_name = bkg_paths[bkg].split("/")[-1]
     run_template_launch = os.path.join(current_folder, "outputs", f"bkg_launch_run_{bkg_name}.mg5")
