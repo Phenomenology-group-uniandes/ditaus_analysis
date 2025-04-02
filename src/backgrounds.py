@@ -35,6 +35,12 @@ bkg_paths_1 = {
     "PATH_TO_STOP_JET": "/disco1/BKG_SM_new/top_jet",
 }
 
+bkg_paths_2 = {
+    "PATH_TO_WW": "/disco2/BKG_SM_new/ww",
+    "PATH_TO_WZ": "/disco2/BKG_SM_new/wz",
+    "PATH_TO_ZZ": "/disco2/BKG_SM_new/zz",
+}
+
 bkg_paths_3 = {
     "PATH_TO_SW_JET": "/disco3/BKG_SM_new/w_jets",
     "PATH_TO_SZ_JET": "/disco3/BKG_SM_new/z_jets",
@@ -88,7 +94,16 @@ for bkg in bkg_paths.keys():
     with open(run_template_launch, "w") as new_f:
         new_f.write("\n".join(lines2))
 
-n_runs = {"ttbar": 4, "top_w": 1, "top_jet": 1, "z_jets": 7, "w_jets": 8}
+n_runs = {
+    "ttbar": 4,
+    "top_w": 1,
+    "top_jet": 1,
+    "ww": 3,
+    "wz": 3,
+    "zz": 3,
+    "w_jets": 8,
+    "z_jets": 7,
+}
 
 
 for bkg in bkg_launch_files.keys():
