@@ -5,6 +5,7 @@ from subprocess import Popen
 
 create_outputs = False
 
+mg5_path="/Collider/MG5_aMC_v3_5_8"
 
 def change_template(template, paths):
     with open(template, "r") as f:
@@ -68,7 +69,7 @@ if create_outputs:
     with open(run_template_outputs, "w") as new_f:
         new_f.write("\n".join(lines1))
     Popen(
-        [os.path.join("/Collider/MG5_aMC_v3_5_7", "bin", "mg5_aMC"), run_template_outputs]
+        [os.path.join(mg5_path, "bin", "mg5_aMC"), run_template_outputs]
     ).wait()
 
 
@@ -90,5 +91,5 @@ n_runs = {"ttbar": 4, "top_w": 1, "top_jet": 1, "z_jets": 7, "w_jets": 8}
 for bkg in bkg_launch_files.keys():
     for i in range(n_runs[bkg]):
         Popen(
-            [os.path.join("/Collider/MG5_aMC_v3_5_7", "bin", "mg5_aMC"), bkg_launch_files[bkg]]
+            [os.path.join(mg5_path, "bin", "mg5_aMC"), bkg_launch_files[bkg]]
         ).wait()
