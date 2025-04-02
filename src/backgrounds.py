@@ -62,11 +62,13 @@ cards_paths = {key: os.path.join(current_folder, value) for key, value in cards_
 
 # Create outputs
 
+
+lines1 = change_template(template_outputs, all_paths)
+run_template_outputs = os.path.join(current_folder, "outputs", "bkg_outputs_run.mg5")
+with open(run_template_outputs, "w") as new_f:
+    new_f.write("\n".join(lines1))
+
 if create_outputs:
-    lines1 = change_template(template_outputs, all_paths)
-    run_template_outputs = os.path.join(current_folder, "outputs", "bkg_outputs_run.mg5")
-    with open(run_template_outputs, "w") as new_f:
-        new_f.write("\n".join(lines1))
     Popen([os.path.join(mg5_path, "bin", "mg5_aMC"), run_template_outputs]).wait()
 
 
