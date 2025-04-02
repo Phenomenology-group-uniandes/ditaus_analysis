@@ -83,7 +83,7 @@ for bkg in bkg_paths.keys():
     dict1["PATH_TO_OUTPUT"] = bkg_paths[bkg]
     if "_jets" in dict1["PATH_TO_OUTPUT"]:
         run_card = dict1["PATH_TO_RUN_CARD"]
-        run_card.replace("run_card.dat", "run_card_w_jet_match.dat")
+        run_card=run_card.replace("run_card.dat", "run_card_w_jet_match.dat")
         dict1["PATH_TO_RUN_CARD"] = run_card
     else:
         pass
