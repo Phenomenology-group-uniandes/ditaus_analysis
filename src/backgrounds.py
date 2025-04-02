@@ -28,34 +28,32 @@ current_folder = os.getcwd()
 template_outputs = os.path.join(current_folder, "src/bkg_outputs.mg5")
 template_launch = os.path.join(current_folder, "src/bkg_launch.mg5")
 
+type_bkg = input("Selecciona el disco (1, 2, 3):\n")
 
-bkg_paths_1 = {
-    "PATH_TO_TTBAR": "/disco1/BKG_SM_new/ttbar",
-    "PATH_TO_STOP_W": "/disco1/BKG_SM_new/top_w",
-    "PATH_TO_STOP_JET": "/disco1/BKG_SM_new/top_jet",
+bkg_paths_dict = {
+    1: {
+        "PATH_TO_TTBAR": "/disco1/BKG_SM_new/ttbar",
+        "PATH_TO_STOP_W": "/disco1/BKG_SM_new/top_w",
+        "PATH_TO_STOP_JET": "/disco1/BKG_SM_new/top_jet",
+    },
+    2: {
+        "PATH_TO_WW": "/disco2/BKG_SM_new/ww",
+        "PATH_TO_WZ": "/disco2/BKG_SM_new/wz",
+        "PATH_TO_ZZ": "/disco2/BKG_SM_new/zz",
+    },
+    3: {
+        "PATH_TO_SW_JET": "/disco3/BKG_SM_new/w_jets",
+        "PATH_TO_SZ_JET": "/disco3/BKG_SM_new/z_jets",
+    },
 }
 
-bkg_paths_2 = {
-    "PATH_TO_WW": "/disco2/BKG_SM_new/ww",
-    "PATH_TO_WZ": "/disco2/BKG_SM_new/wz",
-    "PATH_TO_ZZ": "/disco2/BKG_SM_new/zz",
-}
+all_paths = {key: value for paths in bkg_paths_dict.values() for key, value in paths.items()}
 
-bkg_paths_3 = {
-    "PATH_TO_SW_JET": "/disco3/BKG_SM_new/w_jets",
-    "PATH_TO_SZ_JET": "/disco3/BKG_SM_new/z_jets",
-}
-
-all_paths = bkg_paths_1.copy()
-all_paths.update(bkg_paths_3)
-type_bkg = input("cual disco \n")
-
-if int(type_bkg) == 1:
-    bkg_paths = bkg_paths_1
-elif int(type_bkg) == 3:
-    bkg_paths = bkg_paths_3
-else:
-    raise Exception("Sorry, are you an dump guy?")
+try:
+    type_bkg = int(type_bkg)
+    bkg_paths = bkg_paths_dict[type_bkg]
+except (ValueError, KeyError):
+    raise ValueError("Entrada inválida. Por favor selecciona 1, 2 o 3.")
 
 
 cards_paths = {
