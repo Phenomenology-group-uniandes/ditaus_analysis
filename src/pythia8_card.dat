@@ -83,3 +83,5 @@ SysCalc:fullCutVariation = off
 ! often irrelevant for phenomenology and very slow. You can turn this 
 ! feature off by uncommenting the line below if so desired.
 !partonlevel:mpi = off
+
+TauDecays:externalMode = 0
