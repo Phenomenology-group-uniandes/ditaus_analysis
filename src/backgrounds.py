@@ -1,4 +1,4 @@
-# python3 /home/a.parrao/ditaus_analysis/src/backgrounds.py
+# source ~/.bashrc && python3 /home/a.parrao/ditaus_analysis/src/backgrounds.py
 
 import os
 from subprocess import Popen
