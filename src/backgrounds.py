@@ -95,12 +95,12 @@ for bkg in bkg_paths.keys():
         new_f.write("\n".join(lines2))
 
 n_runs = {
-    "ttbar": 4,
-    "top_w": 1,
-    "top_jet": 1,
-    "ww": 3,
-    "wz": 3,
-    "zz": 3,
+    "ttbar": 7,
+    "top_w": 3,
+    "top_jet": 2,
+    "ww": 5,
+    "wz": 5,
+    "zz": 5,
     "w_jets": 8,
     "z_jets": 7,
 }
