@@ -76,17 +76,17 @@ def get_iseed_from_banner(file_path: str) -> int:
         raise e
 
 
-# Function to get all banner files in a directory
-def get_banner_files(directory: str) -> list:
+# Function to search for files in a directory using glob patterns
+def search_files(directory: str, glob: str = "**/*") -> list:
     from pathlib import Path
 
     dir_path = Path(directory)
-    return [file.as_posix() for file in dir_path.glob("**/*banner.txt")]
+    return [file.as_posix() for file in dir_path.glob(glob)]
 
 
 # Function to get iseed values from all banner files in a directory
 def get_iseed_from_banners(directory: str) -> list:
-    banners = get_banner_files(directory)
+    banners = search_files(directory, "**/*banner.txt")
     iseed_values = []
     for banner in banners:
         try:
