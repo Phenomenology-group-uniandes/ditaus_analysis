@@ -174,6 +174,7 @@ for bkg in bkg_paths.keys():
                 run_card = run_card.replace("run_card.dat", "run_card_w_jet_match.dat")
                 dict1["PATH_TO_RUN_CARD"] = run_card
             # Generate the launch file with updated paths
+            dict1["N_SEED"] = str(generate_new_iseed(used_iseed_values)[-1])
             lines2 = change_template(template_launch, dict1)
             bkg_launch_files[bkg_name] = run_template_launch
             new_f.write("\n".join(lines2))
