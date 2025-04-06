@@ -4,7 +4,6 @@ import os
 from subprocess import Popen
 
 ### GLOBAL VARIABLES ###
-
 # Flag to determine whether to create outputs
 create_outputs = False
 
@@ -53,6 +52,8 @@ def change_template(template: str, paths: dict) -> list:
                     key = line.strip()
                     get_t = paths.get(key)
                 lines.append(line.replace(key, get_t))
+            elif "N_SEED" in line:
+                lines.append(line.replace("N_SEED", paths.get("N_SEED")))
             else:
                 lines.append(line)
     return lines
@@ -93,7 +94,7 @@ def get_iseed_from_banners(directory: str) -> list:
 
 
 # Function to generate a new unique iseed value
-def generate_new_iseed(iseed_values: list, min_value: int = 1, max_value: int = 1000000) -> list:
+def generate_new_iseed(iseed_values: list, min_value: int = 1, max_value: int = 100000) -> list:
     import random
 
     random.seed(iseed_values[-1])
@@ -174,7 +175,8 @@ for bkg in bkg_paths.keys():
                 run_card = run_card.replace("run_card.dat", "run_card_w_jet_match.dat")
                 dict1["PATH_TO_RUN_CARD"] = run_card
             # Generate the launch file with updated paths
-            dict1["N_SEED"] = str(generate_new_iseed(used_iseed_values)[-1])
+            used_iseed_values = generate_new_iseed(used_iseed_values)
+            dict1["N_SEED"] = str(used_iseed_values[-1])
             lines2 = change_template(template_launch, dict1)
             bkg_launch_files[bkg_name] = run_template_launch
             new_f.write("\n".join(lines2))
