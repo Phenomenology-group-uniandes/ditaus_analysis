@@ -101,7 +101,6 @@ def get_iseed_from_banners(directory: str) -> list:
 def generate_new_iseed(iseed_values: list, min_value: int = 1, max_value: int = 100000) -> list:
     import random
 
-    random.seed(iseed_values[-1])
     new_iseed = random.randint(min_value, max_value)
     # Ensure the new iseed is unique
     while new_iseed in iseed_values:
