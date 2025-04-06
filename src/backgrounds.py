@@ -1,7 +1,10 @@
 # source ~/.bashrc && python3 src/backgrounds.py
 # nohup bash -c 'source ~/.bashrc && echo 1 | python3 src/backgrounds.py' > outputs/disk1.log 2>&1 &
+# tail -f outputs/disk1.log
 # nohup bash -c 'source ~/.bashrc && echo 2 | python3 src/backgrounds.py' > outputs/disk2.log 2>&1 &
+# tail -f outputs/disk2.log
 # nohup bash -c 'source ~/.bashrc && echo 3 | python3 src/backgrounds.py' > outputs/disk3.log 2>&1 &
+# tail -f outputs/disk3.log
 
 import os
 from subprocess import Popen
