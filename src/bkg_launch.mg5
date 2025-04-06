@@ -1,4 +1,4 @@
-launch PATH_TO_OUTPUT -madspin
+launch PATH_TO_OUTPUT -m
     6
     shower=Pythia8
     detector=Delphes
@@ -9,3 +9,4 @@ launch PATH_TO_OUTPUT -madspin
     PATH_TO_PYTHIA_CARD
     PATH_TO_DELPHES_CARD
     set iseed N_SEED
+done 

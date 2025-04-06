@@ -1,4 +1,4 @@
-# source ~/.bashrc && python3 /home/a.parrao/ditaus_analysis/src/backgrounds.py
+# source ~/.bashrc && python3 src/backgrounds.py
 
 import os
 from subprocess import Popen
@@ -65,7 +65,7 @@ def get_iseed_from_banner(file_path: str) -> int:
             for line in file:
                 if "iseed" in line:
                     # Extract the value after '=' and convert to integer
-                    return int(line.split("=")[1].strip())
+                    return int(line.split("=")[0].strip())
         raise ValueError("iseed not found in the file.")
     except (FileNotFoundError, ValueError) as e:
         raise e
@@ -159,21 +159,19 @@ bkg_launch_files = {}
 
 # Generate launch files for each background
 for bkg in bkg_paths.keys():
+    bkg_name = bkg_paths[bkg].split("/")[-1]
+    run_template_launch = os.path.join(current_folder, "outputs", f"bkg_launch_run_{bkg_name}.mg5")
     with open(run_template_launch, "w") as new_f:
-        dict1 = cards_paths.copy()
-        dict1["PATH_TO_OUTPUT"] = bkg_paths[bkg]
-        # Adjust the run card for jet-matching backgrounds
-        if "_jets" in dict1["PATH_TO_OUTPUT"]:
-            run_card = dict1["PATH_TO_RUN_CARD"]
-            run_card = run_card.replace("run_card.dat", "run_card_w_jet_match.dat")
-            dict1["PATH_TO_RUN_CARD"] = run_card
-        # Generate the launch file with updated paths
-        lines2 = change_template(template_launch, dict1)
-        bkg_name = bkg_paths[bkg].split("/")[-1]
-        run_template_launch = os.path.join(
-            current_folder, "outputs", f"bkg_launch_run_{bkg_name}.mg5"
-        )
-        bkg_launch_files[bkg_name] = run_template_launch
         for i in range(n_runs[bkg_name]):
+            dict1 = cards_paths.copy()
+            dict1["PATH_TO_OUTPUT"] = bkg_paths[bkg]
+            # Adjust the run card for jet-matching backgrounds
+            if "_jets" in dict1["PATH_TO_OUTPUT"]:
+                run_card = dict1["PATH_TO_RUN_CARD"]
+                run_card = run_card.replace("run_card.dat", "run_card_w_jet_match.dat")
+                dict1["PATH_TO_RUN_CARD"] = run_card
+            # Generate the launch file with updated paths
+            lines2 = change_template(template_launch, dict1)
+            bkg_launch_files[bkg_name] = run_template_launch
             new_f.write("\n".join(lines2))
-        Popen([os.path.join(mg5_path, "bin", "mg5_aMC"), bkg_launch_files[bkg_name]]).wait()
+        # Popen([os.path.join(mg5_path, "bin", "mg5_aMC"), bkg_launch_files[bkg_name]]).wait()
