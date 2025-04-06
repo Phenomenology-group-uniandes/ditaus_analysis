@@ -11,7 +11,7 @@ from subprocess import Popen
 
 ### GLOBAL VARIABLES ###
 
-n_multiruns = 20
+n_multiruns = 10
 
 # Flag to determine whether to create outputs
 create_outputs = False
