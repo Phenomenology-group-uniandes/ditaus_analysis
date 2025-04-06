@@ -104,6 +104,10 @@ all_paths = {key: value for paths in bkg_paths_dict.values() for key, value in p
 try:
     type_bkg = int(type_bkg)
     bkg_paths = bkg_paths_dict[type_bkg]
+    used_iseed_values = []
+    for bkg in bkg_paths.values():
+        iseed_values = get_iseed_from_banners(bkg)
+        used_iseed_values += iseed_values
 except (ValueError, KeyError):
     raise ValueError("Entrada inválida. Por favor selecciona 1, 2 o 3.")
 
