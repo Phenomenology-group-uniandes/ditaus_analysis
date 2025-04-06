@@ -29,6 +29,29 @@ def change_template(template, paths):
     return lines
 
 
+# Function to extract the value of 'iseed' from a banner file
+def get_iseed_from_banner(file_path):
+    try:
+        with open(file_path, "r") as file:
+            for line in file:
+                if "iseed" in line:
+                    # Split the line and extract the value before '='
+                    iseed_value = line.split("=")[0].strip()
+                    return int(iseed_value)
+        raise ValueError("iseed not found in the file.")
+    except FileNotFoundError:
+        raise FileNotFoundError(f"The file {file_path} does not exist.")
+    except ValueError as e:
+        raise ValueError(f"Error reading iseed: {e}")
+
+
+def get_banner_files(directory):
+    from pathlib import Path
+
+    dir_path = Path(directory)
+    return [file.as_posix() for file in dir_path.glob("**/*_banner.txt")]
+
+
 # Get the current working directory
 current_folder = os.getcwd()
 
