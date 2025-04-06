@@ -64,14 +64,11 @@ def get_iseed_from_banner(file_path):
         with open(file_path, "r") as file:
             for line in file:
                 if "iseed" in line:
-                    # Split the line and extract the value before '='
-                    iseed_value = line.split("=")[0].strip()
-                    return int(iseed_value)
+                    # Extract the value after '=' and convert to integer
+                    return int(line.split("=")[1].strip())
         raise ValueError("iseed not found in the file.")
-    except FileNotFoundError:
-        raise FileNotFoundError(f"The file {file_path} does not exist.")
-    except ValueError as e:
-        raise ValueError(f"Error reading iseed: {e}")
+    except (FileNotFoundError, ValueError) as e:
+        raise e
 
 
 # Function to get all banner files in a directory
@@ -79,7 +76,7 @@ def get_banner_files(directory):
     from pathlib import Path
 
     dir_path = Path(directory)
-    return [file.as_posix() for file in dir_path.glob("**/*_banner.txt")]
+    return [file.as_posix() for file in dir_path.glob("**/*banner.txt")]
 
 
 # Function to get iseed values from all banner files in a directory
@@ -93,6 +90,17 @@ def get_iseed_from_banners(directory):
         except Exception as e:
             print(f"Error processing {banner}: {e}")
     return iseed_values
+
+
+# Function to generate a new unique iseed value
+def generate_unique_iseed(iseed_values: list, min_value: int = 1, max_value: int = 1000000):
+    import random
+
+    random.seed(iseed_values[-1])
+    new_iseed = random.randint(min_value, max_value)
+    while new_iseed in iseed_values:
+        new_iseed = random.randint(min_value, max_value)
+    return new_iseed
 
 
 ### UPDATE FILES TO CREATE OUTPUTS ###
