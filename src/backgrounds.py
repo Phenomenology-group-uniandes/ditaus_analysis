@@ -93,14 +93,17 @@ def get_iseed_from_banners(directory: str) -> list:
 
 
 # Function to generate a new unique iseed value
-def generate_unique_iseed(iseed_values: list, min_value: int = 1, max_value: int = 10000) -> int:
+def generate_new_iseed(iseed_values: list, min_value: int = 1, max_value: int = 1000000) -> list:
     import random
 
     random.seed(iseed_values[-1])
     new_iseed = random.randint(min_value, max_value)
+    # Ensure the new iseed is unique
     while new_iseed in iseed_values:
         new_iseed = random.randint(min_value, max_value)
-    return new_iseed
+    # Append the new iseed to the list
+    iseed_values.append(new_iseed)
+    return iseed_values
 
 
 ### UPDATE FILES TO CREATE OUTPUTS ###
