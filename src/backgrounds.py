@@ -10,6 +10,9 @@ import os
 from subprocess import Popen
 
 ### GLOBAL VARIABLES ###
+
+n_multiruns = 10
+
 # Flag to determine whether to create outputs
 create_outputs = False
 
@@ -170,48 +173,47 @@ n_runs = {
 # Dictionary to store paths to launch files for each background
 bkg_launch_files = {}
 
-# Generate launch files for each background
-for bkg in bkg_paths.keys():
-    bkg_name = bkg_paths[bkg].split("/")[-1]
-    run_template_launch = os.path.join(current_folder, "outputs", f"bkg_launch_run_{bkg_name}.mg5")
-    with open(run_template_launch, "w") as new_f:
-        for i in range(n_runs[bkg_name]):
-            dict1 = cards_paths.copy()
-            dict1["PATH_TO_OUTPUT"] = bkg_paths[bkg]
-            # Adjust the run card for jet-matching backgrounds
-            if "_jets" in dict1["PATH_TO_OUTPUT"]:
-                run_card = dict1["PATH_TO_RUN_CARD"]
-                run_card = run_card.replace("run_card.dat", "run_card_w_jet_match.dat")
-                dict1["PATH_TO_RUN_CARD"] = run_card
-            # Generate the launch file with updated paths
-            used_iseed_values = generate_new_iseed(used_iseed_values)
-            dict1["N_SEED"] = str(used_iseed_values[-1])
-            lines2 = change_template(template_launch, dict1)
-            bkg_launch_files[bkg_name] = run_template_launch
-            new_f.write("\n".join(lines2))
-    Popen([os.path.join(mg5_path, "bin", "mg5_aMC"), bkg_launch_files[bkg_name]]).wait()
+for i in range(n_multiruns):
+    # Generate launch files for each background
+    for bkg in bkg_paths.keys():
+        bkg_name = bkg_paths[bkg].split("/")[-1]
+        run_template_launch = os.path.join(
+            current_folder, "outputs", f"bkg_launch_run_{bkg_name}.mg5"
+        )
+        with open(run_template_launch, "w") as new_f:
+            for i in range(n_runs[bkg_name]):
+                dict1 = cards_paths.copy()
+                dict1["PATH_TO_OUTPUT"] = bkg_paths[bkg]
+                # Adjust the run card for jet-matching backgrounds
+                if "_jets" in dict1["PATH_TO_OUTPUT"]:
+                    run_card = dict1["PATH_TO_RUN_CARD"]
+                    run_card = run_card.replace("run_card.dat", "run_card_w_jet_match.dat")
+                    dict1["PATH_TO_RUN_CARD"] = run_card
+                # Generate the launch file with updated paths
+                used_iseed_values = generate_new_iseed(used_iseed_values)
+                dict1["N_SEED"] = str(used_iseed_values[-1])
+                lines2 = change_template(template_launch, dict1)
+                bkg_launch_files[bkg_name] = run_template_launch
+                new_f.write("\n".join(lines2))
+        Popen([os.path.join(mg5_path, "bin", "mg5_aMC"), bkg_launch_files[bkg_name]]).wait()
 
-    # search for all the .lhe files in the bkg_paths[bkg] and delete them
-    lhe_files = search_files(bkg_paths[bkg], "**/*.lhe.gz")
-    for lhe_file in lhe_files:
-        print(f"Deleting {lhe_file}")
-        os.remove(lhe_file)
+        # search for all the .lhe files in the bkg_paths[bkg] and delete them
+        lhe_files = search_files(bkg_paths[bkg], "*.lhe.gz")
+        for lhe_file in lhe_files:
+            print(f"Deleting {lhe_file}")
+            os.remove(lhe_file)
 
-    # rsync with the final folder #change BKG_SM_new to BKG_SM, copy only the new and modified files
-    sync_path = bkg_paths[bkg]
-    sync_path = sync_path.replace("BKG_SM_new", "BKG_SM")
-    os.makedirs(sync_path, exist_ok=True)
-    print(f"Syncing {bkg_paths[bkg]} to {sync_path}")
-    os.system(f"rsync -ahP {bkg_paths[bkg]} {sync_path}")
+        # rsync with the final folder #change BKG_SM_new to BKG_SM, copy only the new and modified files
+        sync_path = bkg_paths[bkg]
+        sync_path = sync_path.replace("BKG_SM_new", "BKG_SM")
+        os.makedirs(sync_path, exist_ok=True)
+        print(f"Syncing {bkg_paths[bkg]} to {sync_path}")
+        os.system(f"rsync -ahP {bkg_paths[bkg]} {sync_path}")
 
-    # search for all the .root files in the bkg_paths[bkg] and delete them
-    root_files = search_files(bkg_paths[bkg], "**/*.root")
-    for root_file in root_files:
-        print(f"Deleting {root_file}")
-        os.remove(root_file)
+        # search for all the .root files in the bkg_paths[bkg] and delete them
+        root_files = search_files(bkg_paths[bkg], "*.root")
+        for root_file in root_files:
+            print(f"Deleting {root_file}")
+            os.remove(root_file)
 
-    # note that in the final folder the root files are not deleted, only the lhe files
-
-    print(f"Finished processing {bkg_name} with {n_runs[bkg_name]} runs.")
-
-print(f"All backgrounds processed in disk {type_bkg}.")
+        # note that in the final folder the root files are not deleted, only the lhe files
