@@ -190,3 +190,18 @@ for bkg in bkg_paths.keys():
         for lhe_file in lhe_files:
             print(f"Deleting {lhe_file}")
             os.remove(lhe_file)
+
+        # rsync with the final folder #change BKG_SM_new to BKG_SM, copy only the new and modified files
+        sync_path = bkg_paths[bkg]
+        sync_path = sync_path.replace("BKG_SM_new", "BKG_SM")
+        os.makedirs(sync_path, exist_ok=True)
+        print(f"Syncing {bkg_paths[bkg]} to {sync_path}")
+        os.system(f"rsync -av --ignore-existing {bkg_paths[bkg]} {sync_path}")
+
+        # search for all the .root files in the bkg_paths[bkg] and delete them
+        root_files = search_files(bkg_paths[bkg], "*.root")
+        for root_file in root_files:
+            print(f"Deleting {root_file}")
+            os.remove(root_file)
+
+        # note that in the final folder the root files are not deleted, only the lhe files
