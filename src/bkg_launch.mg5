@@ -1,10 +1,11 @@
-launch PATH_TO_OUTPUT -i
-    multi_run 10 --nb_core=4
-        shower=Pythia8
-        detector=Delphes
-        analysis=OFF
-        madspin=ON
-        done
-        PATH_TO_RUN_CARD
-        PATH_TO_PYTHIA_CARD
-        PATH_TO_DELPHES_CARD
+launch PATH_TO_OUTPUT -madspin
+    6
+    shower=Pythia8
+    detector=Delphes
+    analysis=OFF
+    madspin=ON
+    done
+    PATH_TO_RUN_CARD
+    PATH_TO_PYTHIA_CARD
+    PATH_TO_DELPHES_CARD
+    set iseed N_SEED

@@ -140,30 +140,7 @@ with open(run_template_outputs, "w") as new_f:
 if create_outputs:
     Popen([os.path.join(mg5_path, "bin", "mg5_aMC"), run_template_outputs]).wait()
 
-### UPDATE FILES TO LAUNCH BACKGROUNDS ###
-
-# Dictionary to store paths to launch files for each background
-bkg_launch_files = {}
-
-# Generate launch files for each background
-for bkg in bkg_paths.keys():
-    dict1 = cards_paths.copy()
-    dict1["PATH_TO_OUTPUT"] = bkg_paths[bkg]
-    # Adjust the run card for jet-matching backgrounds
-    if "_jets" in dict1["PATH_TO_OUTPUT"]:
-        run_card = dict1["PATH_TO_RUN_CARD"]
-        run_card = run_card.replace("run_card.dat", "run_card_w_jet_match.dat")
-        dict1["PATH_TO_RUN_CARD"] = run_card
-    # Generate the launch file with updated paths
-    lines2 = change_template(template_launch, dict1)
-    bkg_name = bkg_paths[bkg].split("/")[-1]
-    run_template_launch = os.path.join(current_folder, "outputs", f"bkg_launch_run_{bkg_name}.mg5")
-    bkg_launch_files[bkg_name] = run_template_launch
-    with open(run_template_launch, "w") as new_f:
-        new_f.write("\n".join(lines2))
-
-
-###LAUNCH MG5_aMC TO SIMULATE BACKGROUNDS###
+### UPDATE FILES TO LAUNCH BACKGROUNDS and LAUNCH MG5_aMC ###
 # Define the number of runs for each background
 n_runs = {
     "ttbar": 7,
@@ -176,7 +153,27 @@ n_runs = {
     "z_jets": 8,
 }
 
-# Execute the launch files for the specified number of runs
-for bkg in bkg_launch_files.keys():
-    for i in range(n_runs[bkg]):
-        Popen([os.path.join(mg5_path, "bin", "mg5_aMC"), bkg_launch_files[bkg]]).wait()
+
+# Dictionary to store paths to launch files for each background
+bkg_launch_files = {}
+
+# Generate launch files for each background
+for bkg in bkg_paths.keys():
+    with open(run_template_launch, "w") as new_f:
+        dict1 = cards_paths.copy()
+        dict1["PATH_TO_OUTPUT"] = bkg_paths[bkg]
+        # Adjust the run card for jet-matching backgrounds
+        if "_jets" in dict1["PATH_TO_OUTPUT"]:
+            run_card = dict1["PATH_TO_RUN_CARD"]
+            run_card = run_card.replace("run_card.dat", "run_card_w_jet_match.dat")
+            dict1["PATH_TO_RUN_CARD"] = run_card
+        # Generate the launch file with updated paths
+        lines2 = change_template(template_launch, dict1)
+        bkg_name = bkg_paths[bkg].split("/")[-1]
+        run_template_launch = os.path.join(
+            current_folder, "outputs", f"bkg_launch_run_{bkg_name}.mg5"
+        )
+        bkg_launch_files[bkg_name] = run_template_launch
+        for i in range(n_runs[bkg_name]):
+            new_f.write("\n".join(lines2))
+        Popen([os.path.join(mg5_path, "bin", "mg5_aMC"), bkg_launch_files[bkg_name]]).wait()
