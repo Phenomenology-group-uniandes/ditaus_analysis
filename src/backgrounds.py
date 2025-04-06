@@ -1,4 +1,7 @@
 # source ~/.bashrc && python3 src/backgrounds.py
+# nohup bash -c 'source ~/.bashrc && echo 1 | python3 src/backgrounds.py' > outputs/disk1.log 2>&1 &
+# nohup bash -c 'source ~/.bashrc && echo 2 | python3 src/backgrounds.py' > outputs/disk2.log 2>&1 &
+# nohup bash -c 'source ~/.bashrc && echo 3 | python3 src/backgrounds.py' > outputs/disk3.log 2>&1 &
 
 import os
 from subprocess import Popen
@@ -196,7 +199,7 @@ for bkg in bkg_paths.keys():
     sync_path = sync_path.replace("BKG_SM_new", "BKG_SM")
     os.makedirs(sync_path, exist_ok=True)
     print(f"Syncing {bkg_paths[bkg]} to {sync_path}")
-    os.system(f"rsync -av --ignore-existing {bkg_paths[bkg]} {sync_path}")
+    os.system(f"rsync -ahP {bkg_paths[bkg]} {sync_path}")
 
     # search for all the .root files in the bkg_paths[bkg] and delete them
     root_files = search_files(bkg_paths[bkg], "*.root")
