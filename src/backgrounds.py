@@ -93,7 +93,7 @@ def get_iseed_from_banners(directory: str) -> list:
 
 
 # Function to generate a new unique iseed value
-def generate_unique_iseed(iseed_values: list, min_value: int = 1, max_value: int = 1000000) -> int:
+def generate_unique_iseed(iseed_values: list, min_value: int = 1, max_value: int = 10000) -> int:
     import random
 
     random.seed(iseed_values[-1])
@@ -172,8 +172,8 @@ n_runs = {
     "ww": 5,
     "wz": 5,
     "zz": 5,
-    "w_jets": 8,
-    "z_jets": 7,
+    "w_jets": 10,
+    "z_jets": 8,
 }
 
 # Execute the launch files for the specified number of runs
