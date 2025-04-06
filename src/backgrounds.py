@@ -192,7 +192,7 @@ for bkg in bkg_paths.keys():
     Popen([os.path.join(mg5_path, "bin", "mg5_aMC"), bkg_launch_files[bkg_name]]).wait()
 
     # search for all the .lhe files in the bkg_paths[bkg] and delete them
-    lhe_files = search_files(bkg_paths[bkg], "*.lhe.gz")
+    lhe_files = search_files(bkg_paths[bkg], "**/*.lhe.gz")
     for lhe_file in lhe_files:
         print(f"Deleting {lhe_file}")
         os.remove(lhe_file)
@@ -205,9 +205,13 @@ for bkg in bkg_paths.keys():
     os.system(f"rsync -ahP {bkg_paths[bkg]} {sync_path}")
 
     # search for all the .root files in the bkg_paths[bkg] and delete them
-    root_files = search_files(bkg_paths[bkg], "*.root")
+    root_files = search_files(bkg_paths[bkg], "**/*.root")
     for root_file in root_files:
         print(f"Deleting {root_file}")
         os.remove(root_file)
 
     # note that in the final folder the root files are not deleted, only the lhe files
+
+    print(f"Finished processing {bkg_name} with {n_runs[bkg_name]} runs.")
+
+print(f"All backgrounds processed in disk {type_bkg}.")
