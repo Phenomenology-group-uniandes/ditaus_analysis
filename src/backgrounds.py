@@ -13,6 +13,10 @@ mg5_path = "/Collider/MG5_aMC_v3_5_8"
 # Get the current working directory
 current_folder = os.getcwd()
 
+# Create outputs directory if it doesn't exist
+outputs_folder = os.path.join(current_folder, "outputs")
+os.makedirs(outputs_folder, exist_ok=True)
+
 # Define paths to template files
 template_outputs = os.path.join(current_folder, "src/bkg_outputs.mg5")
 template_launch = os.path.join(current_folder, "src/bkg_launch.mg5")
