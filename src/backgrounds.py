@@ -185,3 +185,9 @@ for bkg in bkg_paths.keys():
             bkg_launch_files[bkg_name] = run_template_launch
             new_f.write("\n".join(lines2))
         # Popen([os.path.join(mg5_path, "bin", "mg5_aMC"), bkg_launch_files[bkg_name]]).wait()
+
+        # search for all the .lhe files in the bkg_paths[bkg] and delete them
+        lhe_files = search_files(bkg_paths[bkg], "*.lhe.gz")
+        for lhe_file in lhe_files:
+            print(f"Deleting {lhe_file}")
+            os.remove(lhe_file)
