@@ -42,7 +42,7 @@ bkg_paths_dict = {
 
 ### USEFUL FUNCTIONS ###
 # Function to replace placeholders in a template file with actual paths
-def change_template(template, paths):
+def change_template(template: str, paths: dict) -> list:
     with open(template, "r") as f:
         lines = list()
         for line in f:
@@ -59,7 +59,7 @@ def change_template(template, paths):
 
 
 # Function to extract the value of 'iseed' from a banner file
-def get_iseed_from_banner(file_path):
+def get_iseed_from_banner(file_path: str) -> int:
     try:
         with open(file_path, "r") as file:
             for line in file:
@@ -72,7 +72,7 @@ def get_iseed_from_banner(file_path):
 
 
 # Function to get all banner files in a directory
-def get_banner_files(directory):
+def get_banner_files(directory: str) -> list:
     from pathlib import Path
 
     dir_path = Path(directory)
@@ -80,7 +80,7 @@ def get_banner_files(directory):
 
 
 # Function to get iseed values from all banner files in a directory
-def get_iseed_from_banners(directory):
+def get_iseed_from_banners(directory: str) -> list:
     banners = get_banner_files(directory)
     iseed_values = []
     for banner in banners:
@@ -93,7 +93,7 @@ def get_iseed_from_banners(directory):
 
 
 # Function to generate a new unique iseed value
-def generate_unique_iseed(iseed_values: list, min_value: int = 1, max_value: int = 1000000):
+def generate_unique_iseed(iseed_values: list, min_value: int = 1, max_value: int = 1000000) -> int:
     import random
 
     random.seed(iseed_values[-1])
