@@ -217,3 +217,7 @@ for i in range(n_multiruns):
             os.remove(root_file)
 
         # note that in the final folder the root files are not deleted, only the lhe files
+
+        print(f"Finished {bkg_name} run {i+1}/{n_multiruns}")
+
+print(f"Finished {n_multiruns} runs for all backgrounds in disk {type_bkg}.")
