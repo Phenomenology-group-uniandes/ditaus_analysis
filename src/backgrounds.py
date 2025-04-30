@@ -5,6 +5,12 @@
 # tail -f outputs/disk2.log
 # nohup bash -c 'source ~/.bashrc && echo 3 | python3 src/backgrounds.py' > outputs/disk3.log 2>&1 &
 # tail -f outputs/disk3.log
+# nohup bash -c 'echo 5 | python3 src/backgrounds.py' > outputs/disk5.log 2>&1 &
+# tail -f outputs/disk5.log
+# nohup bash -c 'echo 6 | python3 src/backgrounds.py' > outputs/disk6.log 2>&1 &
+# tail -f outputs/disk6.log
+# nohup bash -c 'echo 7 | python3 src/backgrounds.py' > outputs/disk7.log 2>&1 &
+# tail -f outputs/disk7.log
 
 import os
 from subprocess import Popen
@@ -31,7 +37,7 @@ template_outputs = os.path.join(current_folder, "src/bkg_outputs.mg5")
 template_launch = os.path.join(current_folder, "src/bkg_launch.mg5")
 
 # Prompt the user to select a disk type
-type_bkg = input("Selecciona el disco (1, 2, 3):\n")
+type_bkg = input("Selecciona el disco (1, 2, 3, 5, 6, 7): ")
 
 # Dictionary mapping disk types to background paths
 bkg_paths_dict = {
@@ -48,6 +54,17 @@ bkg_paths_dict = {
     3: {
         "PATH_TO_SW_JET": "/disco3/BKG_SM_new/w_jets",
         "PATH_TO_SZ_JET": "/disco3/BKG_SM_new/z_jets",
+    },
+    5: {
+        "PATH_TO_TTX": "/disco5/BKG_SM_new/ttbarx",
+        "PATH_TO_BBX": "/disco5/BKG_SM_new/bbarx",
+        "PATH_TO_TTW": "/disco5/BKG_SM_new/ttbarw",
+    },
+    6: {
+        "PATH_TO_TAUPTAU": "/disco6/BKG_SM_new/DY_tautau",
+    },
+    7: {
+        "PATH_TO_QCD": "/disco7/BKG_SM_new/QCD_jets",
     },
 }
 
@@ -133,7 +150,7 @@ try:
         iseed_values = get_iseed_from_banners(bkg)
         used_iseed_values += iseed_values
 except (ValueError, KeyError):
-    raise ValueError("Entrada inválida. Por favor selecciona 1, 2 o 3.")
+    raise ValueError("Entrada inválida. Por favor selecciona 1, 2, 3, 5, 6 o 7.")
 
 # Define paths to configuration cards
 cards_paths = {
@@ -167,8 +184,12 @@ n_runs = {
     "zz": 5,
     "w_jets": 10,
     "z_jets": 8,
+    "ttbarx": 5,
+    "bbarx": 5,
+    "ttbarw": 5,
+    "DY_tautau": 12,
+    "QCD_jets": 12,
 }
-
 
 # Dictionary to store paths to launch files for each background
 bkg_launch_files = {}
