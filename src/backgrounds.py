@@ -13,6 +13,7 @@
 # tail -f outputs/disk7.log
 
 import os
+import shutil
 from subprocess import Popen
 
 ### GLOBAL VARIABLES ###
@@ -27,6 +28,14 @@ mg5_path = "/Collider/MG5_aMC_v3_5_8"
 
 # Get the current working directory
 current_folder = os.getcwd()
+
+# Copy (and overwrite if it is necesary) current_folder/MinBias.pileup to /tmp/delphes/MinBias.pileup
+pileup_file = os.path.join(current_folder, "MinBias.pileup")
+dst_dir = "/tmp/delphes"
+dst_file = os.path.join(dst_dir, "MinBias.pileup")
+
+os.makedirs(dst_dir, exist_ok=True)
+shutil.copy2(pileup_file, dst_file)
 
 # Create outputs directory if it doesn't exist
 outputs_folder = os.path.join(current_folder, "outputs")
