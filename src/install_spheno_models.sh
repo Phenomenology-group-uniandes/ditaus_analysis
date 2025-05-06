@@ -47,8 +47,8 @@ for MODEL in "${REQUIRED_MODELS[@]}"; do
   if [ -d "$SPHENO_MODEL_PATH" ]; then
     echo "Installing model $MODEL..."
 
-    rm -f "models/$MODEL"
-    ln -s "$SPHENO_MODEL_PATH" "models/$MODEL"
+    rm -f "../models/$MODEL"
+    ln -s "$SPHENO_MODEL_PATH" "$SPHENO_DIR/models/$MODEL"
 
     cmake -DMODELS=$MODEL && make -j4 && make install 
 
