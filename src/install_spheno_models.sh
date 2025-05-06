@@ -25,6 +25,8 @@ if [ -d "$SPHENO_DIR" ]; then
   fi
 fi
 
+
+# Preinstall SPheno
 echo "Cloning SPheno from the fork..."
 git clone https://github.com/Phenomenology-group-uniandes/SPheno.git "$SPHENO_DIR" 
 
@@ -36,7 +38,7 @@ cmake .. && make -j4 && sudo make install
 # Models that require installation in SPheno
 REQUIRED_MODELS=("THDM" "U1T3R")
 
-# Install only the selected models
+# Install each model
 for MODEL in "${REQUIRED_MODELS[@]}"; do
   MODEL_PATH="$MODELS_DIR/$MODEL"
   SPHENO_MODEL_PATH="$MODEL_PATH/SPheno"
