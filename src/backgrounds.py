@@ -16,6 +16,7 @@ import os
 import shutil
 from subprocess import Popen
 from mg5_helpers import get_iseed_from_banners, change_template, generate_new_iseed, search_files
+
 ### GLOBAL VARIABLES ###
 
 n_multiruns = 10
