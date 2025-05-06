@@ -37,6 +37,14 @@ BUILD_DIR="$SPHENO_DIR/build"
 mkdir -p "$BUILD_DIR" && cd "$BUILD_DIR" || exit 1
 cmake .. && make -j4 && sudo make install 
 
+# add BUILD_DIR to LD_LIBRARY_PATH on the bashrc if not already present
+if ! grep -q "export LD_LIBRARY_PATH=$BUILD_DIR:\$LD_LIBRARY_PATH" ~/.bashrc; then
+  echo "export LD_LIBRARY_PATH=$BUILD_DIR:\$LD_LIBRARY_PATH" >> ~/.bashrc
+  echo "Added $BUILD_DIR to LD_LIBRARY_PATH in .bashrc"
+else
+  echo "$BUILD_DIR is already in LD_LIBRARY_PATH in .bashrc"
+fi
+
 # Models that require installation in SPheno
 REQUIRED_MODELS=("THDM" "U1T3R")
 
