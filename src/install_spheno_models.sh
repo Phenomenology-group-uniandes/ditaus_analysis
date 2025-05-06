@@ -1,4 +1,6 @@
 #!/bin/bash
+### echo y | ./src/install_spheno_models.sh
+
 
 # Use de mg5_env conda environment
 # Activate the conda environment
