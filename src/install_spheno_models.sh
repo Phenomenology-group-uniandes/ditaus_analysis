@@ -1,5 +1,5 @@
 #!/bin/bash
-### echo y | ./src/install_spheno_models.sh
+### echo y | bash src/install_spheno_models.sh
 
 
 # Use de mg5_env conda environment
@@ -23,7 +23,7 @@ if [ -d "$SPHENO_DIR" ]; then
     exit 0
   else
     echo "Reinstalling SPheno..."
-    rm -rf "$SPHENO_DIR"
+    sudo rm -rf "$SPHENO_DIR"
   fi
 fi
 
