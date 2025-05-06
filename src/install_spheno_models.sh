@@ -25,19 +25,16 @@ if [ -d "$SPHENO_DIR" ]; then
   fi
 fi
 
-# Models that require installation in SPheno
-REQUIRED_MODELS=("THDM" "U1T3R")
-
 echo "Cloning SPheno from the fork..."
-git clone https://github.com/Phenomenology-group-uniandes/SPheno.git "$SPHENO_DIR" || {
-  echo "Error cloning the repository."; exit 1;
-}
-
-cd "$SPHENO_DIR" || exit 1
+git clone https://github.com/Phenomenology-group-uniandes/SPheno.git "$SPHENO_DIR" 
 
 echo "Compiling base SPheno..."
-mkdir build && cd build
-cmake .. && make -j4 && make install 
+BUILD_DIR="$SPHENO_DIR/build"
+mkdir -p "$BUILD_DIR" && cd "$BUILD_DIR" || exit 1
+cmake .. && make -j4 && sudo make install 
+
+# Models that require installation in SPheno
+REQUIRED_MODELS=("THDM" "U1T3R")
 
 # Install only the selected models
 for MODEL in "${REQUIRED_MODELS[@]}"; do
@@ -46,11 +43,11 @@ for MODEL in "${REQUIRED_MODELS[@]}"; do
 
   if [ -d "$SPHENO_MODEL_PATH" ]; then
     echo "Installing model $MODEL..."
-
+    cd "$BUILD_DIR"
     rm -f "../models/$MODEL"
     ln -s "$SPHENO_MODEL_PATH" "$SPHENO_DIR/models/$MODEL"
-
-    cmake -DMODELS=$MODEL && make -j4 && make install 
+    
+    cmake .. -DMODELS=$MODEL && make -j4 && sudo make install 
 
     echo "Model $MODEL installed successfully."
   else
