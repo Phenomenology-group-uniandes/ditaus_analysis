@@ -29,6 +29,11 @@ def get_lam_params(
     """
     Get the lambda parameters from the input dictionary
     """
+    # check that mass_params has the required keys
+    for key in mass_params_keys:
+        if key not in mass_params:
+            raise ValueError(f"Missing key {key} in mass_params")
+
     tb = mass_params.get("tb")
     cb = np.cos(np.atan(tb))
     sb = np.sin(np.atan(tb))
@@ -85,6 +90,11 @@ def get_lam_params(
 
 
 def get_mass_params(lam_params, verbose=False):
+    # check if lam_params has the required keys
+    for key in lam_params_keys:
+        if key not in lam_params:
+            raise ValueError(f"Missing key {key} in lam_params")
+
     vev = 246.22
 
     l1 = lam_params.get("lam1")
