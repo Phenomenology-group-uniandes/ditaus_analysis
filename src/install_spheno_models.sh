@@ -37,11 +37,7 @@ cd "$SPHENO_DIR" || exit 1
 
 echo "Compiling base SPheno..."
 mkdir build && cd build
-cmake .. && make && make install || {
-  echo "Failed to compile or install base SPheno."; exit 1;
-}
-
-cd "$SPHENO_DIR" || exit 1
+cmake .. && make -j4 && make install 
 
 # Install only the selected models
 for MODEL in "${REQUIRED_MODELS[@]}"; do
@@ -54,14 +50,8 @@ for MODEL in "${REQUIRED_MODELS[@]}"; do
     rm -f "models/$MODEL"
     ln -s "$SPHENO_MODEL_PATH" "models/$MODEL"
 
-    mkdir -p "build/$MODEL"
-    cd "build/$MODEL" || exit 1
+    cmake -DMODELS=$MODEL && make -j4 && make install 
 
-    cmake -DMODELS=$MODEL ../.. && make && make install || {
-      echo "Error installing model $MODEL"; exit 1;
-    }
-
-    cd "$SPHENO_DIR" || exit 1
     echo "Model $MODEL installed successfully."
   else
     echo "Skipping $MODEL: $SPHENO_MODEL_PATH not found"
