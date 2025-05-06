@@ -3,7 +3,7 @@
 # Base paths
 PROJECT_DIR=$(pwd)
 MODELS_DIR="$PROJECT_DIR/models"
-SPHENO_DIR="$PROJECT_DIR/SPheno"
+SPHENO_DIR="$PROJECT_DIR/spheno"
 
 # Check if SPheno is already installed
 if [ -d "$SPHENO_DIR" ]; then

@@ -6,6 +6,8 @@ nsqso_born.inc
 *.lhe*
 py3*.pkl
 outputs/
+
+spheno/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
