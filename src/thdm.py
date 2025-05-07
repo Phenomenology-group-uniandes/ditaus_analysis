@@ -8,7 +8,6 @@ mass_params_keys = {
     "m122": "squared z2 soft breaking mass",
     "cba": "cos(beta-alpha)",
     "tb": "tan(beta)",
-    "vev": "vacuum expectation value",
 }
 
 lam_params_keys = {
