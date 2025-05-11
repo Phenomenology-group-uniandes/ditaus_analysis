@@ -4,7 +4,7 @@
 !           1405.1434, 1411.0675, 1503.03098, 1703.09237, 1706.05372, 1805.07306  
 ! (c) Florian Staub, Mark Goodsell and Werner Porod 2020  
 ! ------------------------------------------------------------------------------  
-! File created at 13:20 on 4.4.2025   
+! File created at 12:57 on 7.5.2025   
 ! ----------------------------------------------------------------------  
  
  
@@ -41,7 +41,18 @@ Real(dp) :: vSM, g1SM, g2SM, g3SM
 Integer :: i1 
 Logical :: ISR(p_max)=.False.
 Logical :: CalcTBD
-Real(dp) :: Tpar,Spar,Upar,ae,amu,atau,EDMe,EDMmu,EDMtau,dRho
+Real(dp) :: Tpar,Spar,Upar,ae,amu,atau,EDMe,EDMmu,EDMtau,dRho,BrBsGamma,ratioBsGamma,             & 
+& BrDmunu,ratioDmunu,BrDsmunu,ratioDsmunu,BrDstaunu,ratioDstaunu,BrBmunu,ratioBmunu,     & 
+& BrBtaunu,ratioBtaunu,BrKmunu,ratioKmunu,RK,RKSM,muEgamma,tauEgamma,tauMuGamma,         & 
+& CRmuEAl,CRmuETi,CRmuESr,CRmuESb,CRmuEAu,CRmuEPb,BRmuTo3e,BRtauTo3e,BRtauTo3mu,         & 
+& BRtauToemumu,BRtauTomuee,BRtauToemumu2,BRtauTomuee2,BrZtoMuE,BrZtoTauE,BrZtoTauMu,     & 
+& BrhtoMuE,BrhtoTauE,BrhtoTauMu,DeltaMBs,ratioDeltaMBs,DeltaMBq,ratioDeltaMBq,           & 
+& BrTautoEPi,BrTautoEEta,BrTautoEEtap,BrTautoMuPi,BrTautoMuEta,BrTautoMuEtap,            & 
+& BrB0dEE,ratioB0dEE,BrB0sEE,ratioB0sEE,BrB0dMuMu,ratioB0dMuMu,BrB0sMuMu,ratioB0sMuMu,   & 
+& BrB0dTauTau,ratioB0dTauTau,BrB0sTauTau,ratioB0sTauTau,BrBtoSEE,ratioBtoSEE,            & 
+& BrBtoSMuMu,ratioBtoSMuMu,BrBtoKee,ratioBtoKee,BrBtoKmumu,ratioBtoKmumu,BrBtoSnunu,     & 
+& ratioBtoSnunu,BrBtoDnunu,ratioBtoDnunu,BrKptoPipnunu,ratioKptoPipnunu,BrKltoPinunu,    & 
+& ratioKltoPinunu,BrK0eMu,ratioK0eMu,DelMK,ratioDelMK,epsK,ratioepsK
 
 Tpar = 0._dp 
 Spar = 0._dp 
@@ -53,6 +64,88 @@ EDMe = 0._dp
 EDMmu = 0._dp 
 EDMtau = 0._dp 
 dRho = 0._dp 
+BrBsGamma = 0._dp 
+ratioBsGamma = 0._dp 
+BrDmunu = 0._dp 
+ratioDmunu = 0._dp 
+BrDsmunu = 0._dp 
+ratioDsmunu = 0._dp 
+BrDstaunu = 0._dp 
+ratioDstaunu = 0._dp 
+BrBmunu = 0._dp 
+ratioBmunu = 0._dp 
+BrBtaunu = 0._dp 
+ratioBtaunu = 0._dp 
+BrKmunu = 0._dp 
+ratioKmunu = 0._dp 
+RK = 0._dp 
+RKSM = 0._dp 
+muEgamma = 0._dp 
+tauEgamma = 0._dp 
+tauMuGamma = 0._dp 
+CRmuEAl = 0._dp 
+CRmuETi = 0._dp 
+CRmuESr = 0._dp 
+CRmuESb = 0._dp 
+CRmuEAu = 0._dp 
+CRmuEPb = 0._dp 
+BRmuTo3e = 0._dp 
+BRtauTo3e = 0._dp 
+BRtauTo3mu = 0._dp 
+BRtauToemumu = 0._dp 
+BRtauTomuee = 0._dp 
+BRtauToemumu2 = 0._dp 
+BRtauTomuee2 = 0._dp 
+BrZtoMuE = 0._dp 
+BrZtoTauE = 0._dp 
+BrZtoTauMu = 0._dp 
+BrhtoMuE = 0._dp 
+BrhtoTauE = 0._dp 
+BrhtoTauMu = 0._dp 
+DeltaMBs = 0._dp 
+ratioDeltaMBs = 0._dp 
+DeltaMBq = 0._dp 
+ratioDeltaMBq = 0._dp 
+BrTautoEPi = 0._dp 
+BrTautoEEta = 0._dp 
+BrTautoEEtap = 0._dp 
+BrTautoMuPi = 0._dp 
+BrTautoMuEta = 0._dp 
+BrTautoMuEtap = 0._dp 
+BrB0dEE = 0._dp 
+ratioB0dEE = 0._dp 
+BrB0sEE = 0._dp 
+ratioB0sEE = 0._dp 
+BrB0dMuMu = 0._dp 
+ratioB0dMuMu = 0._dp 
+BrB0sMuMu = 0._dp 
+ratioB0sMuMu = 0._dp 
+BrB0dTauTau = 0._dp 
+ratioB0dTauTau = 0._dp 
+BrB0sTauTau = 0._dp 
+ratioB0sTauTau = 0._dp 
+BrBtoSEE = 0._dp 
+ratioBtoSEE = 0._dp 
+BrBtoSMuMu = 0._dp 
+ratioBtoSMuMu = 0._dp 
+BrBtoKee = 0._dp 
+ratioBtoKee = 0._dp 
+BrBtoKmumu = 0._dp 
+ratioBtoKmumu = 0._dp 
+BrBtoSnunu = 0._dp 
+ratioBtoSnunu = 0._dp 
+BrBtoDnunu = 0._dp 
+ratioBtoDnunu = 0._dp 
+BrKptoPipnunu = 0._dp 
+ratioKptoPipnunu = 0._dp 
+BrKltoPinunu = 0._dp 
+ratioKltoPinunu = 0._dp 
+BrK0eMu = 0._dp 
+ratioK0eMu = 0._dp 
+DelMK = 0._dp 
+ratioDelMK = 0._dp 
+epsK = 0._dp 
+ratioepsK = 0._dp 
 Call get_command_argument(1,inputFileName)
 If (len_trim(inputFileName)==0) Then
   inputFileName="LesHouches.in.U1T3R"
@@ -136,7 +229,7 @@ If (MatchingOrder.eq.-1) Then
  gX = gXIN
 gX1 = gX1IN
 g1X = g1XIN
-vPhi = 2._dp*(mZpINPUT)/gX
+vPhi = mZpINPUT/gX
 vH = 2*Sqrt(mW2/g2**2)
 LamH = (mh1sqINPUT + mh2sqINPUT*taINPUT**2)/(2._dp*(1 + taINPUT**2)*vH**2)
 LamPhi = (mh2sqINPUT + mh1sqINPUT*taINPUT**2)/(2._dp*(1 + taINPUT**2)*vPhi**2)
@@ -184,7 +277,7 @@ YeSM= Transpose(YeSM)
 gX = gXIN
 gX1 = gX1IN
 g1X = g1XIN
-vPhi = 2._dp*(mZpINPUT)/gX
+vPhi = mZpINPUT/gX
 vH = 2*Sqrt(mW2/g2**2)
 LamH = (mh1sqINPUT + mh2sqINPUT*taINPUT**2)/(2._dp*(1 + taINPUT**2)*vH**2)
 LamPhi = (mh2sqINPUT + mh1sqINPUT*taINPUT**2)/(2._dp*(1 + taINPUT**2)*vPhi**2)
@@ -313,7 +406,18 @@ End If
 nuMasses = MFv 
 Call CalculateLowEnergyConstraints(g1,g1X,g2,g3,gX,gX1,LamH,LamPhiH,LamPhi,           & 
 & YvL,YuL,YvR,YuR,YdL,YeL,YdR,YeR,mChiD,mChiE,mChiNu,mChiU,mu2H,mu2Phi,vH,               & 
-& vPhi,Tpar,Spar,Upar,ae,amu,atau,EDMe,EDMmu,EDMtau,dRho)
+& vPhi,Tpar,Spar,Upar,ae,amu,atau,EDMe,EDMmu,EDMtau,dRho,BrBsGamma,ratioBsGamma,         & 
+& BrDmunu,ratioDmunu,BrDsmunu,ratioDsmunu,BrDstaunu,ratioDstaunu,BrBmunu,ratioBmunu,     & 
+& BrBtaunu,ratioBtaunu,BrKmunu,ratioKmunu,RK,RKSM,muEgamma,tauEgamma,tauMuGamma,         & 
+& CRmuEAl,CRmuETi,CRmuESr,CRmuESb,CRmuEAu,CRmuEPb,BRmuTo3e,BRtauTo3e,BRtauTo3mu,         & 
+& BRtauToemumu,BRtauTomuee,BRtauToemumu2,BRtauTomuee2,BrZtoMuE,BrZtoTauE,BrZtoTauMu,     & 
+& BrhtoMuE,BrhtoTauE,BrhtoTauMu,DeltaMBs,ratioDeltaMBs,DeltaMBq,ratioDeltaMBq,           & 
+& BrTautoEPi,BrTautoEEta,BrTautoEEtap,BrTautoMuPi,BrTautoMuEta,BrTautoMuEtap,            & 
+& BrB0dEE,ratioB0dEE,BrB0sEE,ratioB0sEE,BrB0dMuMu,ratioB0dMuMu,BrB0sMuMu,ratioB0sMuMu,   & 
+& BrB0dTauTau,ratioB0dTauTau,BrB0sTauTau,ratioB0sTauTau,BrBtoSEE,ratioBtoSEE,            & 
+& BrBtoSMuMu,ratioBtoSMuMu,BrBtoKee,ratioBtoKee,BrBtoKmumu,ratioBtoKmumu,BrBtoSnunu,     & 
+& ratioBtoSnunu,BrBtoDnunu,ratioBtoDnunu,BrKptoPipnunu,ratioKptoPipnunu,BrKltoPinunu,    & 
+& ratioKltoPinunu,BrK0eMu,ratioK0eMu,DelMK,ratioDelMK,epsK,ratioepsK)
 
 MVZ = mz 
 MVZ2 = mz2 
@@ -355,7 +459,18 @@ Call ScatteringEigenvaluesWithTrilinears(alphaH,MAh,MAh2,MFd,MFd2,MFe,MFe2,     
 End if 
 Write(*,*) "Writing output files" 
 Call LesHouches_Out(67,11,kont,MGUT,Tpar,Spar,Upar,ae,amu,atau,EDMe,EDMmu,            & 
-& EDMtau,dRho,GenerationMixing)
+& EDMtau,dRho,BrBsGamma,ratioBsGamma,BrDmunu,ratioDmunu,BrDsmunu,ratioDsmunu,            & 
+& BrDstaunu,ratioDstaunu,BrBmunu,ratioBmunu,BrBtaunu,ratioBtaunu,BrKmunu,ratioKmunu,     & 
+& RK,RKSM,muEgamma,tauEgamma,tauMuGamma,CRmuEAl,CRmuETi,CRmuESr,CRmuESb,CRmuEAu,         & 
+& CRmuEPb,BRmuTo3e,BRtauTo3e,BRtauTo3mu,BRtauToemumu,BRtauTomuee,BRtauToemumu2,          & 
+& BRtauTomuee2,BrZtoMuE,BrZtoTauE,BrZtoTauMu,BrhtoMuE,BrhtoTauE,BrhtoTauMu,              & 
+& DeltaMBs,ratioDeltaMBs,DeltaMBq,ratioDeltaMBq,BrTautoEPi,BrTautoEEta,BrTautoEEtap,     & 
+& BrTautoMuPi,BrTautoMuEta,BrTautoMuEtap,BrB0dEE,ratioB0dEE,BrB0sEE,ratioB0sEE,          & 
+& BrB0dMuMu,ratioB0dMuMu,BrB0sMuMu,ratioB0sMuMu,BrB0dTauTau,ratioB0dTauTau,              & 
+& BrB0sTauTau,ratioB0sTauTau,BrBtoSEE,ratioBtoSEE,BrBtoSMuMu,ratioBtoSMuMu,              & 
+& BrBtoKee,ratioBtoKee,BrBtoKmumu,ratioBtoKmumu,BrBtoSnunu,ratioBtoSnunu,BrBtoDnunu,     & 
+& ratioBtoDnunu,BrKptoPipnunu,ratioKptoPipnunu,BrKltoPinunu,ratioKltoPinunu,             & 
+& BrK0eMu,ratioK0eMu,DelMK,ratioDelMK,epsK,ratioepsK,GenerationMixing)
 
 End if 
 Write(*,*) "Finished!" 

@@ -4,7 +4,7 @@
 !           1405.1434, 1411.0675, 1503.03098, 1703.09237, 1706.05372, 1805.07306  
 ! (c) Florian Staub, Mark Goodsell and Werner Porod 2020  
 ! ------------------------------------------------------------------------------  
-! File created at 13:20 on 4.4.2025   
+! File created at 12:54 on 7.5.2025   
 ! ----------------------------------------------------------------------  
  
  
@@ -1587,7 +1587,7 @@ If (HighScaleModel.ne."LOW") Then
  gX = gXIN
 gX1 = gX1IN
 g1X = g1XIN
-vPhi = 2._dp*(mZpINPUT)/gX
+vPhi = mZpINPUT/gX
 vH = 2*Sqrt(mW2/g2**2)
 LamH = (mh1sqINPUT + mh2sqINPUT*taINPUT**2)/(2._dp*(1 + taINPUT**2)*vH**2)
 LamPhi = (mh2sqINPUT + mh1sqINPUT*taINPUT**2)/(2._dp*(1 + taINPUT**2)*vPhi**2)
@@ -1869,7 +1869,7 @@ If (HighScaleModel.ne."LOW") Then
  gX = gXIN
 gX1 = gX1IN
 g1X = g1XIN
-vPhi = 2._dp*(mZpINPUT)/gX
+vPhi = mZpINPUT/gX
 vH = 2*Sqrt(mW2/g2**2)
 LamH = (mh1sqINPUT + mh2sqINPUT*taINPUT**2)/(2._dp*(1 + taINPUT**2)*vH**2)
 LamPhi = (mh2sqINPUT + mh1sqINPUT*taINPUT**2)/(2._dp*(1 + taINPUT**2)*vPhi**2)

@@ -67,6 +67,7 @@ ${name}(Bremsstrahlung.o) ${name}(DecayFFS.o) ${name}(DecayFFV.o) ${name}(DecayS
  ${name}(Wrapper_LoopDecay_Fu_U1T3R.o)  ${name}(Wrapper_LoopDecay_Fe_U1T3R.o)  ${name}(Wrapper_LoopDecay_Fd_U1T3R.o)  ${name}(Wrapper_LoopDecay_hh_U1T3R.o) ${name}(OneLoopDecays_U1T3R.o) \
  ${name}(BranchingRatios_U1T3R.o) ${name}(HiggsCS_U1T3R.o) ${name}(RunSM_U1T3R.o) \
  ${name}(Unitarity_U1T3R.o) \
+${name}(FlavorKit_LFV_U1T3R.o) ${name}(FlavorKit_QFV_U1T3R.o) ${name}(FlavorKit_Observables_U1T3R.o)\
  ${name}(LowEnergy_U1T3R.o) \
  ${name}(Boundaries_U1T3R.o)  ${name}(InputOutput_U1T3R.o) 
 else 
