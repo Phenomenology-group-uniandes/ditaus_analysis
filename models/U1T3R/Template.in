@@ -12,10 +12,10 @@ Block SMINPUTS    # Standard Model inputs
  6 1.728900E+02    # m_top(pole) 
  7 1.776690E+00    # m_tau(pole) 
 Block MINPAR      # Input parameters 
- 1   1.5625000E+04    # mh1sqINPUT
- 2   2.5000000E+05    # mh2sqINPUT
- 3   5.0000000E-02    # taINPUT
- 20   5.0000000E+03    # mZpINPUT
+ 1   mh1squared    # mh1sqINPUT
+ 2   mh2squared    # mh2sqINPUT
+ 3   tan_a    # taINPUT
+ 20   m_zp    # mZpINPUT
 Block SPhenoInput   # SPheno specific input 
   1 0              # error level 
   2  0              # SPA conventions 
@@ -219,6 +219,6 @@ Block MCHINUIN    #
  3 2   0.000000E+00         # mChiNu(3,2)
  3 3   mChiNu33         # mChiNu(3,3)
 Block GAUGEIN       #  
- 4   0.300000E+00         # gX
+ 4   g_zp         # gX
  5   0.00000E+00         # gX1
  6   0.000000E+00         # g1X
