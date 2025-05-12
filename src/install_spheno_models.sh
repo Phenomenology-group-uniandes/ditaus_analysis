@@ -1,5 +1,5 @@
 #!/bin/bash
-### echo y | bash src/install_spheno_models.sh
+### echo 1 | bash src/install_spheno_models.sh
 
 
 # Use de mg5_env conda environment
@@ -13,37 +13,58 @@ conda activate mg5_env || {
 PROJECT_DIR=$(pwd)
 MODELS_DIR="$PROJECT_DIR/models"
 SPHENO_DIR="$PROJECT_DIR/spheno"
+BUILD_DIR="$SPHENO_DIR/build"
 
-# Check if SPheno is already install
+# Function to clone and compile SPheno
+build_spheno() {
+  echo "Cloning SPheno from the fork..."
+  git clone https://github.com/Phenomenology-group-uniandes/SPheno.git "$SPHENO_DIR"
+
+  echo "Compiling base SPheno..."
+  mkdir -p "$BUILD_DIR" && cd "$BUILD_DIR" || exit 1
+  cmake .. && make -j4 && sudo make install
+
+  # Add BUILD_DIR to LD_LIBRARY_PATH in .bashrc if not already present
+  if ! grep -q "export LD_LIBRARY_PATH=$BUILD_DIR:\$LD_LIBRARY_PATH" ~/.bashrc; then
+    echo "export LD_LIBRARY_PATH=$BUILD_DIR:\$LD_LIBRARY_PATH" >> ~/.bashrc
+    echo "Added $BUILD_DIR to LD_LIBRARY_PATH in .bashrc"
+  else
+    echo "$BUILD_DIR is already in LD_LIBRARY_PATH in .bashrc"
+  fi
+}
+
+# Check if SPheno is already installed
 if [ -d "$SPHENO_DIR" ]; then
   echo "SPheno is already installed in $SPHENO_DIR."
-  read -p "Do you want to reinstall it? (y/n): " REINSTALL
-  if [[ "$REINSTALL" != "y" ]]; then
-    echo "Exiting without reinstalling SPheno."
-    exit 0
-  else
-    echo "Reinstalling SPheno..."
-    sudo rm -rf "$SPHENO_DIR"
-  fi
-fi
+  echo "What would you like to do?"
+  echo "1) Reinstall SPheno"
+  echo "2) Use the existing installation for new models"
+  echo "3) Do nothing and exit"
+  read -p "Enter your choice (1/2/3): " CHOICE
 
-
-# Preinstall SPheno
-echo "Cloning SPheno from the fork..."
-git clone https://github.com/Phenomenology-group-uniandes/SPheno.git "$SPHENO_DIR" 
-
-echo "Compiling base SPheno..."
-BUILD_DIR="$SPHENO_DIR/build"
-mkdir -p "$BUILD_DIR" && cd "$BUILD_DIR" || exit 1
-cmake .. && make -j4 && sudo make install 
-
-# add BUILD_DIR to LD_LIBRARY_PATH on the bashrc if not already present
-if ! grep -q "export LD_LIBRARY_PATH=$BUILD_DIR:\$LD_LIBRARY_PATH" ~/.bashrc; then
-  echo "export LD_LIBRARY_PATH=$BUILD_DIR:\$LD_LIBRARY_PATH" >> ~/.bashrc
-  echo "Added $BUILD_DIR to LD_LIBRARY_PATH in .bashrc"
+  case "$CHOICE" in
+    1)
+      echo "Reinstalling SPheno..."
+      sudo rm -rf "$SPHENO_DIR"
+      build_spheno
+      ;;
+    2)
+      echo "Using the existing SPheno installation for new models."
+      ;;
+    3)
+      echo "Exiting without making any changes."
+      exit 0
+      ;;
+    *)
+      echo "Invalid choice. Exiting."
+      exit 1
+      ;;
+  esac
 else
-  echo "$BUILD_DIR is already in LD_LIBRARY_PATH in .bashrc"
+  echo "SPheno is not installed. Installing now..."
+  build_spheno
 fi
+
 
 # Models that require installation in SPheno
 REQUIRED_MODELS=("THDM" "U1T3R")
@@ -59,7 +80,7 @@ for MODEL in "${REQUIRED_MODELS[@]}"; do
     rm -f "../models/$MODEL"
     ln -s "$SPHENO_MODEL_PATH" "$SPHENO_DIR/models/$MODEL"
     
-    cmake .. -DMODELS=$MODEL && make -j4 && sudo make install 
+    cmake .. -DMODELS=$MODEL && make -j4 && sudo make install
 
     echo "Model $MODEL installed successfully."
   else
