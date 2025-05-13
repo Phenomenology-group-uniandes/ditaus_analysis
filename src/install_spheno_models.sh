@@ -67,7 +67,7 @@ fi
 
 
 # Models that require installation in SPheno
-REQUIRED_MODELS=("THDM" "U1T3R")
+REQUIRED_MODELS=("U1T3R" "THDM")
 
 # Install each model
 for MODEL in "${REQUIRED_MODELS[@]}"; do
