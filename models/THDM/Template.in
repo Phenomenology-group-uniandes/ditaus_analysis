@@ -29,13 +29,13 @@ Block SPhenoInput   # SPheno specific input
  11 1               # calculate branching ratios 
  13 0               # 3-Body decays: none (0), fermion (1), scalar (2), both (3) 
  14 0               # Run couplings to scale of decaying particle 
- 12 1.000E-04       # write only branching ratios larger than this value 
+ 12 1.000E-15       # write only branching ratios larger than this value 
  15 1.000E-30       # write only decay if width larger than this value 
  16 1              # One-loop decays 
  19 -2              # Matching order (-2:automatic, -1:pole, 0-2: tree, one- & two-loop) 
  31 -1              # fixed GUT scale (-1: dynamical GUT scale) 
  32 0               # Strict unification 
- 34 1.000E-04       # Precision of mass calculation 
+ 34 1.000E-05       # Precision of mass calculation 
  35 40              # Maximal number of iterations
  36 5               # Minimal number of iterations before discarding points
  37 1               # Set Yukawa scheme  
