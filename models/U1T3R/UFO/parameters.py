@@ -8641,17 +8641,17 @@ el = Parameter(name='el',
     value = '2*cmath.sqrt(1/aEWM1)*cmath.sqrt(cmath.pi)',
     texname = '\\text{el}')
 
-TW = Parameter(name='TW',
-    nature = 'internal',
-    type = 'real',
-    value = 'cmath.asin(cmath.sqrt(1 - $Failed**2/MZ**2))',
-    texname = '\\text{TW}')
-
 MWp = Parameter(name='MWp',
     nature = 'internal',
     type = 'real',
     value = 'cmath.sqrt(MZ**2/2. + cmath.sqrt(MZ**4/4. - (MZ**2*cmath.pi)/(cmath.sqrt(2)*aEWM1*Gf)))',
     texname = '\\text{MWp}')
+
+TW = Parameter(name='TW',
+    nature = 'internal',
+    type = 'real',
+    value = 'cmath.asin(cmath.sqrt(1 - MWp**2/MZ**2))',
+    texname = '\\text{TW}')
 
 g1 = Parameter(name='g1',
     nature = 'internal',
