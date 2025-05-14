@@ -15,7 +15,13 @@
 import os
 import shutil
 from subprocess import Popen
-from mg5_helpers import get_iseed_from_banners, change_template, generate_new_iseed, search_files
+
+from mg5_helpers import (
+    change_template,
+    generate_new_iseed,
+    get_iseed_from_banners,
+    search_files,
+)
 
 ### GLOBAL VARIABLES ###
 
@@ -44,7 +50,7 @@ os.makedirs(outputs_folder, exist_ok=True)
 
 # Define paths to template files
 template_outputs = os.path.join(current_folder, "src/bkg_outputs.mg5")
-template_launch = os.path.join(current_folder, "src/bkg_launch.mg5")
+template_launch = os.path.join(current_folder, "src/launch.mg5")
 
 # Prompt the user to select a disk type
 type_bkg = input("Selecciona el disco (1, 2, 3, 5, 6, 7): ")
@@ -97,6 +103,7 @@ except (ValueError, KeyError):
 
 # Define paths to configuration cards
 cards_paths = {
+    "PATH_TO_NEW_PARAM_CARD": '',
     "PATH_TO_RUN_CARD": "src/run_card.dat",
     "PATH_TO_PYTHIA_CARD": "src/pythia8_card.dat",
     "PATH_TO_DELPHES_CARD": "src/delphes_card_CMS.dat",
