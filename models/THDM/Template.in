@@ -29,7 +29,7 @@ Block SPhenoInput   # SPheno specific input
  11 1               # calculate branching ratios 
  13 0               # 3-Body decays: none (0), fermion (1), scalar (2), both (3) 
  14 0               # Run couplings to scale of decaying particle 
- 12 1.000E-15       # write only branching ratios larger than this value 
+ 12 1.000E-06       # write only branching ratios larger than this value 
  15 1.000E-30       # write only decay if width larger than this value 
  16 1              # One-loop decays 
  19 -2              # Matching order (-2:automatic, -1:pole, 0-2: tree, one- & two-loop) 
