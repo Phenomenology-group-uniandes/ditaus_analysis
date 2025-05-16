@@ -11,11 +11,19 @@ def change_template(template: str, paths: dict) -> list:
                     key = line.strip()
                     get_t = paths.get(key)
                 lines.append(line.replace(key, get_t))
+            elif "UFO_PATH" in line:
+                key = line.split(" ")[2]
+                get_t = paths.get(key)
+                if get_t is None:
+                    key = line.strip()
+                    get_t = paths.get(key)
+                lines.append(line.replace(key, get_t))
             elif "N_SEED" in line:
                 lines.append(line.replace("N_SEED", paths.get("N_SEED")))
             else:
                 lines.append(line)
     return lines
+
 
 # Function to extract the value of 'iseed' from a banner file
 def get_iseed_from_banner(file_path: str) -> int:
@@ -28,7 +36,7 @@ def get_iseed_from_banner(file_path: str) -> int:
         raise ValueError(f"iseed not found in the file: {file_path}")
     except (FileNotFoundError, ValueError) as e:
         raise e
-    
+
 
 # Function to search for files in a directory using glob patterns
 def search_files(directory: str, glob: str = "**/*") -> list:
