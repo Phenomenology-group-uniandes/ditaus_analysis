@@ -103,8 +103,7 @@ except (ValueError, KeyError):
 
 # Define paths to configuration cards
 cards_paths = {
-    "PATH_TO_NEW_PARAM_CARD": "",  # The backgrounds must to use the default Param Card from SM
-    "PATH_TO_CONFIGS": "",  # The backgrounds must to use the default Param Card from SM
+    "PATH_TO_PARAM_CONFIGS": "",  # The backgrounds must to use the default Param Card from SM
     "PATH_TO_RUN_CARD": "src/run_card.dat",
     "PATH_TO_PYTHIA_CARD": "src/pythia8_card.dat",
     "PATH_TO_DELPHES_CARD": "src/delphes_card_CMS.dat",

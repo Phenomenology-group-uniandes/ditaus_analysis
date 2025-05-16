@@ -5,9 +5,9 @@ launch PATH_TO_OUTPUT -m
     analysis=OFF
     madspin=ON
     done
-    PATH_TO_NEW_PARAM_CARD
-    PATH_TO_CONFIGS
+    
     PATH_TO_RUN_CARD
+    PATH_TO_PARAM_CONFIGS
     PATH_TO_PYTHIA_CARD
     PATH_TO_DELPHES_CARD
     set iseed N_SEED
