@@ -1,8 +1,8 @@
 import model UFO_PATH --modelname
 define p = p b b~
 
-generate p p > ta+ ta-{L} @0
+generate p p > ta+ ta-{L} QED=0 @0
 output PATH_TO_OUTPUT_L -nojpeg
 
-generate p p > ta+ ta-{R} @0
+generate p p > ta+ ta-{R} QED=0 @0
 output PATH_TO_OUTPUT_R -nojpeg
