@@ -4,7 +4,9 @@ def change_template(template: str, paths: dict) -> list:
     with open(template, "r") as f:
         lines = list()
         for line in f:
-            if "PATH_TO" in line:
+            if "SIGNAL_OUTPUT" in line:
+                lines.append(line.replace("SIGNAL_OUTPUT", paths.get("SIGNAL_OUTPUT")))
+            elif "PATH_TO" in line:
                 key = line.split(" ")[1]
                 get_t = paths.get(key)
                 if get_t is None:

@@ -1,0 +1,12 @@
+import model UFO_PATH
+generate b{L} b~ > ta+ ta-{L} QED=0 @0
+output SIGNAL_OUTPUT/tau_m_left_bottom_left 
+
+generate b{R} b~ > ta+ ta-{L} QED=0 @0
+output SIGNAL_OUTPUT/tau_m_left_bottom_right
+
+generate b{L} b~ > ta+ ta-{R} QED=0 @0
+output SIGNAL_OUTPUT/tau_m_right_bottom_left
+
+generate b{R} b~ > ta+ ta-{R} QED=0 @0
+output SIGNAL_OUTPUT/tau_m_right_bottom_right
