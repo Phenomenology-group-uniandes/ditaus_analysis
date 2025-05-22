@@ -50,17 +50,17 @@ template_launch = os.path.join(current_folder, "src/launch.mg5")
 
 
 cards_paths = {
-    "PATH_TO_RUN_CARD": "src/run_card.dat",
+    "PATH_TO_RUN_CARD": os.path.join(current_folder, "src/run_card.dat"),
     "PATH_TO_PARAM_CONFIGS": "",
-    "PATH_TO_PYTHIA_CARD": "src/pythia8_card.dat",
-    "PATH_TO_DELPHES_CARD": "src/delphes_card_CMS.dat",
+    "PATH_TO_PYTHIA_CARD": os.path.join(current_folder, "src/pythia8_card.dat"),
+    "PATH_TO_DELPHES_CARD": os.path.join(current_folder, "src/delphes_card_CMS.dat"),
 }
 
 # UFO_BY MODEL
 models = [
+    "Zprime",
     "sLQ",
     "vLQ",
-    "Zprime",
     # "THDM",
     # "U1T3R",
 ]
@@ -80,8 +80,8 @@ for ufodir in ufos_dir.values():
 
 
 mass_min = 500
-mass_max = 5000
-mass_step = 250
+mass_max = 4000
+mass_step = 500
 
 # check that the initial and final mass are connected by the step
 if (mass_max - mass_min) % mass_step != 0:
@@ -93,21 +93,18 @@ mass_range = np.arange(mass_min, mass_max + mass_step, mass_step)
 
 
 for run in range(n_runs):
-    for mass in mass_range:
-        for model, ufodir in ufos_dir.items():
+    for model, ufodir in ufos_dir.items():
+        for mass in mass_range:
             out_model_dir = os.path.join(outputs_folder, model)
             working_dir = os.path.join(out_model_dir, str(mass))
             model_used_seeds = get_iseed_from_banners(out_model_dir)
             if create_outputs:
                 os.makedirs(working_dir, exist_ok=True)
-                
+
                 template_outputs = os.path.join(ufodir, "..", "proc_command.mg5")
                 output_lines = change_template(
                     template_outputs,
-                    {
-                        "UFO_PATH": ufodir,
-                        "SIGNAL_OUTPUT": working_dir
-                    },
+                    {"UFO_PATH": ufodir, "SIGNAL_OUTPUT": working_dir},
                 )
                 proc_file = os.path.join(working_dir, "proc_command.mg5")
                 with open(proc_file, "w") as f:
@@ -119,8 +116,9 @@ for run in range(n_runs):
             launch_file = os.path.join(working_dir, "launcher.mg5")
             template_launch = os.path.join(current_folder, "src/launch.mg5")
             # Search for all the folders in the working directory
-            subfolders = os.listdir(working_dir)
-
+            subfolders = [
+                d for d in os.listdir(working_dir) if os.path.isdir(os.path.join(working_dir, d))
+            ]
             with open(launch_file, "w") as new_f:
                 for output in subfolders:
                     dict1 = cards_paths.copy()
@@ -130,7 +128,7 @@ for run in range(n_runs):
                     dict1["N_SEED"] = str(model_used_seeds[-1])
                     lines = change_template(template_launch, dict1)
                     new_f.writelines(lines)
-            #Popen([mg5_aMC_bin, launch_file], cwd=working_dir).wait()
+            Popen([mg5_aMC_bin, launch_file], cwd=working_dir).wait()
             # search for all the .lhe files in the working directory and delete them
             lhe_files = search_files(working_dir, "**/*.lhe.gz")
             for lhe_file in lhe_files:
