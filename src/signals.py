@@ -47,7 +47,6 @@ os.makedirs(outputs_folder, exist_ok=True)
 
 # Define paths to template files
 template_launch = os.path.join(current_folder, "src/launch.mg5")
-template_outputs = os.path.join(current_folder, "src/signal_outputs.mg5")
 
 
 cards_paths = {
@@ -96,20 +95,21 @@ mass_range = np.arange(mass_min, mass_max + mass_step, mass_step)
 for run in range(n_runs):
     for mass in mass_range:
         for model, ufodir in ufos_dir.items():
-            model_dir = os.path.join(outputs_folder, model)
-            working_dir = os.path.join(model_dir, str(mass))
-            model_used_seeds = get_iseed_from_banners(model_dir)
+            out_model_dir = os.path.join(outputs_folder, model)
+            working_dir = os.path.join(out_model_dir, str(mass))
+            model_used_seeds = get_iseed_from_banners(out_model_dir)
             if create_outputs:
                 os.makedirs(working_dir, exist_ok=True)
+                
+                template_outputs = os.path.join(ufodir, "..", "proc_command.mg5")
                 output_lines = change_template(
                     template_outputs,
                     {
                         "UFO_PATH": ufodir,
-                        "PATH_TO_OUTPUT_L": os.path.join(working_dir, "left"),
-                        "PATH_TO_OUTPUT_R": os.path.join(working_dir, "right"),
+                        "SIGNAL_OUTPUT": working_dir
                     },
                 )
-                proc_file = os.path.join(working_dir, "proc_card_mg5.dat")
+                proc_file = os.path.join(working_dir, "proc_command.mg5")
                 with open(proc_file, "w") as f:
                     f.writelines(output_lines)
                 Popen([mg5_aMC_bin, proc_file], cwd=working_dir).wait()
@@ -118,8 +118,11 @@ for run in range(n_runs):
                 param_config_content = param_config_content.replace("NP_Mass", str(mass))
             launch_file = os.path.join(working_dir, "launcher.mg5")
             template_launch = os.path.join(current_folder, "src/launch.mg5")
+            # Search for all the folders in the working directory
+            subfolders = os.listdir(working_dir)
+
             with open(launch_file, "w") as new_f:
-                for output in ["left", "right"]:
+                for output in subfolders:
                     dict1 = cards_paths.copy()
                     dict1["PATH_TO_PARAM_CONFIGS"] = param_config_content
                     dict1["PATH_TO_OUTPUT"] = os.path.join(working_dir, output)
@@ -127,7 +130,7 @@ for run in range(n_runs):
                     dict1["N_SEED"] = str(model_used_seeds[-1])
                     lines = change_template(template_launch, dict1)
                     new_f.writelines(lines)
-            Popen([mg5_aMC_bin, launch_file], cwd=working_dir).wait()
+            #Popen([mg5_aMC_bin, launch_file], cwd=working_dir).wait()
             # search for all the .lhe files in the working directory and delete them
             lhe_files = search_files(working_dir, "**/*.lhe.gz")
             for lhe_file in lhe_files:
@@ -135,7 +138,7 @@ for run in range(n_runs):
                 os.remove(lhe_file)
 
             # sync the model directory with the final_sim_Path[model]
-            os.system(f"rsync -ahP {model_dir} {final_sim_Path[model]}")
+            os.system(f"rsync -ahP {out_model_dir} {final_sim_Path[model]}")
 
             # search for all the .root files in the working directory and delete them
             root_files = search_files(working_dir, "**/*.root")
