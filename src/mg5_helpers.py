@@ -14,12 +14,7 @@ def change_template(template: str, paths: dict) -> list:
                     get_t = paths.get(key)
                 lines.append(line.replace(key, get_t))
             elif "UFO_PATH" in line:
-                key = line.split(" ")[2]
-                get_t = paths.get(key)
-                if get_t is None:
-                    key = line.strip()
-                    get_t = paths.get(key)
-                lines.append(line.replace(key, get_t))
+                lines.append(line.replace("UFO_PATH", paths.get("UFO_PATH")))
             elif "N_SEED" in line:
                 lines.append(line.replace("N_SEED", paths.get("N_SEED")))
             else:
