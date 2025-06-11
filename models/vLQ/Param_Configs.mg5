@@ -1,6 +1,6 @@
-set MVLQ NP_Mass
-set WVLQ auto
-set gU 1.0
-set betaL33 1.0
-set betaRd33 1.0
-set betaL23 0.2
+    set MVLQ NP_Mass
+    set WVLQ auto
+    set gU 1.0
+    set betaL33 1.0
+    set betaRd33 1.0
+    set betaL23 0.2

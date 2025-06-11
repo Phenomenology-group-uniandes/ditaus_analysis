@@ -1,14 +1,14 @@
 launch PATH_TO_OUTPUT -m
-    6
+    30
     shower=Pythia8
     detector=Delphes
     analysis=OFF
-    madspin=ON
+    madspin=OFF
     done
     
     PATH_TO_RUN_CARD
     PATH_TO_PARAM_CONFIGS
+    set iseed N_SEED
     PATH_TO_PYTHIA_CARD
     PATH_TO_DELPHES_CARD
-    set iseed N_SEED
 done 

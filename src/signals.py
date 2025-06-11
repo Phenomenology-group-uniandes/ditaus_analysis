@@ -42,6 +42,7 @@ shutil.copy2(pileup_file, dst_file)
 
 # Create outputs directory if it doesn't exist
 outputs_folder = os.path.join(current_folder, "outputs")
+outputs_folder = "/pheno-server_disks/disco1/temp"
 os.makedirs(outputs_folder, exist_ok=True)
 
 
@@ -59,8 +60,8 @@ cards_paths = {
 # UFO_BY MODEL
 models = [
     "Zprime",
-    "sLQ",
-    "vLQ",
+    # "sLQ",
+    # "vLQ",
     # "THDM",
     # "U1T3R",
 ]
@@ -80,7 +81,7 @@ for ufodir in ufos_dir.values():
 
 
 mass_min = 500
-mass_max = 4000
+mass_max = 5000
 mass_step = 500
 
 # check that the initial and final mass are connected by the step
@@ -136,7 +137,7 @@ for run in range(n_runs):
                 os.remove(lhe_file)
 
             # sync the model directory with the final_sim_Path[model]
-            os.system(f"rsync -ahP {out_model_dir} {final_sim_Path[model]}")
+            os.system(f"rsync -ahP -L {out_model_dir} {final_sim_Path[model]}")
 
             # search for all the .root files in the working directory and delete them
             root_files = search_files(working_dir, "**/*.root")

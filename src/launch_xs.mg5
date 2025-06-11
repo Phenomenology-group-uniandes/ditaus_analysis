@@ -1,0 +1,12 @@
+launch PATH_TO_OUTPUT -m
+    24
+    shower=OFF
+    detector=OFF
+    analysis=OFF
+    madspin=OFF
+    done
+    
+    PATH_TO_RUN_CARD
+    PATH_TO_PARAM_CONFIGS
+    set nevents 1000
+done
