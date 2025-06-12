@@ -1,7 +1,4 @@
 import model UFO_PATH
 define p = p b b~
-generate p p > ta+ ta-{L} QED=0 @0
-output SIGNAL_OUTPUT/tau_m_left
-
 generate p p > ta+ ta-{R} QED=0 @0
 output SIGNAL_OUTPUT/tau_m_right
