@@ -217,7 +217,7 @@ def run_preselection(root_file_path: str) -> pd.DataFrame:
     concated_results = pd.concat(results.values(), ignore_index=True)
 
     feather_path = root_file_path.replace(".root", ".feather")
-    # concated_results.to_feather(feather_path)
+    concated_results.to_feather(feather_path)
     print(f"Preselection results saved to {feather_path}")
     # Clean up
     tfile.Close()
