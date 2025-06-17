@@ -76,6 +76,7 @@ while True:
         folder: get_forest(os.path.join(path_to_signal, folder), "**/*.root")
         for folder in signal_keys
     }
+    os.system("sleep 60")
 
     for key in bkg_forests.keys():
         for root_file in bkg_forests[key]:
@@ -90,5 +91,5 @@ while True:
 
     patata = preselect(trees_to_be_processed[:])
 
-    os.system("sleep 120")  # wait for 2 minutes before next iteration
+    os.system("sleep 60")  # wait for 2 minutes before next iteration
     overwrite = False
