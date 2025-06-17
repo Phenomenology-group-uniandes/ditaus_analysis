@@ -1,7 +1,7 @@
 from pathlib import Path
 import os
 from tqdm.auto import tqdm
-from src.preselection import run_preselection
+from preselection import run_preselection
 
 from multiprocessing import Pool
 
