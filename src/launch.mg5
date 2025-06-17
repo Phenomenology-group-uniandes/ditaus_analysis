@@ -1,5 +1,5 @@
 launch PATH_TO_OUTPUT -m
-    30
+    6
     shower=Pythia8
     detector=Delphes
     analysis=OFF
