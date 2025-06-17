@@ -1,3 +1,4 @@
+# nohup bash -c 'python3 src/processing_root.py' > outputs/processing_root.log 2>&1 &
 from pathlib import Path
 import os
 from tqdm.auto import tqdm
@@ -76,7 +77,6 @@ while True:
         folder: get_forest(os.path.join(path_to_signal, folder), "**/*.root")
         for folder in signal_keys
     }
-    os.system("sleep 60")
 
     for key in bkg_forests.keys():
         for root_file in bkg_forests[key]:
@@ -89,7 +89,6 @@ while True:
             if not os.path.exists(feather_file) or overwrite:
                 trees_to_be_processed.append(root_file)
 
-    patata = preselect(trees_to_be_processed[:])
-
     os.system("sleep 60")  # wait for 2 minutes before next iteration
+    patata = preselect(trees_to_be_processed[:])
     overwrite = False
