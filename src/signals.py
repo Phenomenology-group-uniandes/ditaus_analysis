@@ -1,4 +1,4 @@
-# nohup bash -c 'python3 src/signals.py' > outputs/signals.log 2>&1 &
+# nohup bash -c 'python3 src/signals.py' > outputs/signals2.log 2>&1 &
 
 import os
 import shutil
@@ -42,7 +42,7 @@ shutil.copy2(pileup_file, dst_file)
 
 # Create outputs directory if it doesn't exist
 outputs_folder = os.path.join(current_folder, "outputs")
-outputs_folder = "/pheno-server_disks/disco1/temp"
+outputs_folder = "/pheno-server_disks/disco2/temp"
 os.makedirs(outputs_folder, exist_ok=True)
 
 
@@ -59,9 +59,9 @@ cards_paths = {
 
 # UFO_BY MODEL
 models = [
-    "Zprime",
-    # "sLQ",
-    # "vLQ",
+    # "Zprime",
+    "sLQ",
+    "vLQ",
     # "THDM",
     # "U1T3R",
 ]
@@ -93,7 +93,7 @@ if (mass_max - mass_min) % mass_step != 0:
 mass_range = np.arange(mass_min, mass_max + mass_step, mass_step)
 
 
-for run in range(n_runs):
+for run in range(n_runs + 1):
     for model, ufodir in ufos_dir.items():
         for mass in mass_range:
             out_model_dir = os.path.join(outputs_folder, model)
@@ -129,12 +129,15 @@ for run in range(n_runs):
                     dict1["N_SEED"] = str(model_used_seeds[-1])
                     lines = change_template(template_launch, dict1)
                     new_f.writelines(lines)
-            Popen([mg5_aMC_bin, launch_file], cwd=working_dir).wait()
+            if not create_outputs:
+                Popen([mg5_aMC_bin, launch_file], cwd=working_dir).wait()
+                # exit()
+
             # search for all the .lhe files in the working directory and delete them
-            lhe_files = search_files(working_dir, "**/*.lhe.gz")
-            for lhe_file in lhe_files:
-                print(f"Deleting {lhe_file}")
-                os.remove(lhe_file)
+            # lhe_files = search_files(working_dir, "**/*.lhe.gz")
+            # for lhe_file in lhe_files:
+            #     print(f"Deleting {lhe_file}")
+            #     os.remove(lhe_file)
 
             # sync the model directory with the final_sim_Path[model]
             os.system(f"rsync -ahP -L {out_model_dir} {final_sim_Path[model]}")
