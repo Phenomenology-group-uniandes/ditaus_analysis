@@ -80,12 +80,12 @@ while True:
 
     for key in bkg_forests.keys():
         for root_file in bkg_forests[key]:
-            feather_file = root_file.replace(".root", ".feather")
+            feather_file = root_file.replace(".root", "_ditaus.feather")
             if not os.path.exists(feather_file) or overwrite:
                 trees_to_be_processed.append(root_file)
     for key in signal_forests.keys():
         for root_file in signal_forests[key]:
-            feather_file = root_file.replace(".root", ".feather")
+            feather_file = root_file.replace(".root", "_ditaus.feather")
             if not os.path.exists(feather_file) or overwrite:
                 trees_to_be_processed.append(root_file)
 
