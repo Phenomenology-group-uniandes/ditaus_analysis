@@ -91,4 +91,4 @@ while True:
     patata = preselect(trees_to_be_processed[:])
 
     os.system("sleep 120")  # wait for 2 minutes before next iteration
-overwrite = False
+    overwrite = False
