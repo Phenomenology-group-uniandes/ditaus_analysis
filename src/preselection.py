@@ -1,6 +1,7 @@
 import ROOT
 import os
 import pandas as pd
+from tqdm.auto import tqdm
 
 ROOT.gSystem.Load("libDelphes")
 
@@ -26,8 +27,6 @@ class TauCandidate:
         self.Charge = ref.Charge
         self.is_hadronic = is_hadronic
         if is_hadronic:
-            tracks = ROOT.TLorentzVector()
-            towers = ROOT.TLorentzVector()
             self.NCharged = ref.NCharged
             self.NNeutrals = ref.NNeutrals
             self.ChargedEnergyFraction = ref.ChargedEnergyFraction
@@ -58,10 +57,7 @@ class TauCandidate:
 
     @property
     def Mass(self):
-        if self.is_hadronic:
-            return self.Ref.Mass
-        else:
-            return 0.0
+        self.Ref.P4().M()
 
 
 def jet_type(jet):
@@ -96,16 +92,20 @@ def fill_object_info(
 
 
 def run_preselection(root_file_path: str) -> pd.DataFrame:
-    # print(f"Running preselection on {root_file_path}")
+    print("=" * 80)
+    print("=" * 80)
+    print("=" * 80)
+    print(f"Running preselection on")
+    print(root_file_path)
     results = dict()
 
     good_jets_idx = {"light": [], "b": [], "tau": []}
-    # print("Loading ROOT file and initializing tree reader...")
+    print("Loading ROOT file and initializing tree reader...")
     tfile = ROOT.TFile(root_file_path)
     tree = tfile.Get("Delphes")
     treeReader = ROOT.ExRootTreeReader(tree)
     numberOfEntries = treeReader.GetEntries()
-    # print(f"Number of entries in the tree: {numberOfEntries}")
+    print(f"Number of entries in the tree: {numberOfEntries}")
     # Load the required branches
     delphes_branches = [
         "Jet",
@@ -122,7 +122,7 @@ def run_preselection(root_file_path: str) -> pd.DataFrame:
     ]
     branches = {branch: treeReader.UseBranch(branch) for branch in delphes_branches}
 
-    for entry in range(0, numberOfEntries):
+    for entry in tqdm(range(0, numberOfEntries), desc="Processing entries"):
         treeReader.ReadEntry(entry)
 
         n_raw_jets = branches["Jet"].GetEntriesFast()
@@ -216,9 +216,8 @@ def run_preselection(root_file_path: str) -> pd.DataFrame:
     results = {label: pd.DataFrame.from_records(results[label]) for label in results}
     concated_results = pd.concat(results.values(), ignore_index=True)
 
-    feather_path = root_file_path.replace(".root", ".feather")
+    feather_path = root_file_path.replace(".root", "_ditaus.feather")
     concated_results.to_feather(feather_path)
-    print(f"Preselection results saved to {feather_path}")
     # Clean up
     tfile.Close()
 
