@@ -1,10 +1,9 @@
 # nohup bash -c 'python3 src/processing_root.py' > outputs/processing_root.log 2>&1 &
-from pathlib import Path
 import os
-from tqdm.auto import tqdm
-from preselection import run_preselection
+import re
+from pathlib import Path
 
-from multiprocessing import Pool
+from preselection import run_preselection
 
 
 def convert(text):
@@ -15,7 +14,6 @@ def convert(text):
 
 
 def alphanum_key(key):
-    import re
 
     return [convert(c) for c in re.split("([0-9]+)", key)]
 
@@ -66,7 +64,9 @@ signal_keys = [
 
 
 overwrite = True
+i = 0
 while True:
+    i = i + 1
     trees_to_be_processed = list()
 
     bkg_forests = {
@@ -78,17 +78,19 @@ while True:
         for folder in signal_keys
     }
 
-    for key in bkg_forests.keys():
-        for root_file in bkg_forests[key]:
-            feather_file = root_file.replace(".root", "_ditaus.feather")
-            if not os.path.exists(feather_file) or overwrite:
-                trees_to_be_processed.append(root_file)
     for key in signal_forests.keys():
         for root_file in signal_forests[key]:
             feather_file = root_file.replace(".root", "_ditaus.feather")
             if not os.path.exists(feather_file) or overwrite:
                 trees_to_be_processed.append(root_file)
+    for key in bkg_forests.keys():
+        for root_file in bkg_forests[key]:
+            feather_file = root_file.replace(".root", "_ditaus.feather")
+            if not os.path.exists(feather_file) or overwrite:
+                trees_to_be_processed.append(root_file)
 
-    os.system("sleep 60")  # wait for 2 minutes before next iteration
+    os.system("sleep 120")  # wait for 2 minutes before next iteration
     patata = preselect(trees_to_be_processed[:])
     overwrite = False
+    print(f"Iteration {i} completed. {len(patata)} files failed to process.")
+    [print(f"Failed file: {f}") for f in patata]

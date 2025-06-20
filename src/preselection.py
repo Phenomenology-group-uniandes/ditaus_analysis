@@ -1,6 +1,8 @@
-import ROOT
 import os
+import re
+
 import pandas as pd
+import ROOT
 from tqdm.auto import tqdm
 
 ROOT.gSystem.Load("libDelphes")
@@ -23,9 +25,17 @@ CUTS = {
 class TauCandidate:
     def __init__(self, ref, is_hadronic=True):
         self.Ref = ref
+
         self.type = "had" if is_hadronic else "lep"
         self.Charge = ref.Charge
         self.is_hadronic = is_hadronic
+        class_name = ref.__class__.__name__
+        if class_name == "Muon":
+            self.Mass = 0.105658  # GeV
+        elif class_name == "Electron":
+            self.Mass = 0.000511  # GeV
+        else:
+            self.Mass = ref.Mass  # GeV
         if is_hadronic:
             self.NCharged = ref.NCharged
             self.NNeutrals = ref.NNeutrals
@@ -54,10 +64,6 @@ class TauCandidate:
     @property
     def Phi(self):
         return self.Ref.Phi
-
-    @property
-    def Mass(self):
-        self.Ref.P4().M()
 
 
 def jet_type(jet):
@@ -91,6 +97,25 @@ def fill_object_info(
     return row
 
 
+def get_cross_section_pb(log_text):
+    """
+    Given the text of a Pythia log, extract the cross section and its error in pb.
+    Returns (cross_section_pb, error_pb) as floats, or (None, None) if not found.
+    """
+    # Regex to match the line
+    pattern = r"Inclusive cross section:\s*([0-9.eE+-]+)\s*\+\-\s*([0-9.eE+-]+)\s*mb"
+    for line in log_text.splitlines():
+        match = re.search(pattern, line)
+        if match:
+            value_mb = float(match.group(1))
+            error_mb = float(match.group(2))
+            # Convert mb to pb
+            value_pb = value_mb * 1e9
+            error_pb = error_mb * 1e9
+            return value_pb, error_pb
+    return None, None
+
+
 def run_preselection(root_file_path: str) -> pd.DataFrame:
     print("=" * 80)
     print("=" * 80)
@@ -121,8 +146,14 @@ def run_preselection(root_file_path: str) -> pd.DataFrame:
         "ScalarHT",
     ]
     branches = {branch: treeReader.UseBranch(branch) for branch in delphes_branches}
+    pythia_log_file = root_file_path.replace("delphes_events.root", "pythia8.log")
+    xs = get_cross_section_pb(
+        open(pythia_log_file, "r").read() if os.path.exists(pythia_log_file) else None
+    )[0]
 
+    mg5_run_name = os.path.basename(os.path.dirname(root_file_path))
     for entry in tqdm(range(0, numberOfEntries), desc="Processing entries"):
+        row = {"cross_section_delphes(pb)": xs, "n_events_delphes": numberOfEntries}
         treeReader.ReadEntry(entry)
 
         n_raw_jets = branches["Jet"].GetEntriesFast()
@@ -171,7 +202,6 @@ def run_preselection(root_file_path: str) -> pd.DataFrame:
         tau_candidates.sort(key=lambda x: x.Charge)
 
         label = "ditau"
-        row = {}
         tau_extra_attrs = [
             "TauWeight",
             "Charge",
@@ -215,7 +245,8 @@ def run_preselection(root_file_path: str) -> pd.DataFrame:
         results[label] = results.get(label, []) + [row]
     results = {label: pd.DataFrame.from_records(results[label]) for label in results}
     concated_results = pd.concat(results.values(), ignore_index=True)
-
+    concated_results["n_events_preselected"] = len(concated_results)
+    concated_results["mg5_run_name"] = mg5_run_name
     feather_path = root_file_path.replace(".root", "_ditaus.feather")
     concated_results.to_feather(feather_path)
     # Clean up
