@@ -6,6 +6,7 @@ nsqso_born.inc
 *.lhe*
 py3*.pkl
 outputs/
+data/
 
 spheno/
 # Byte-compiled / optimized / DLL files
