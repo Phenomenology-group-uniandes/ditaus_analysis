@@ -1,5 +1,5 @@
     set MVLQ NP_Mass
-    set WVLQ auto
+    set WVLQ NP_Width
     set gU 1.0
     set betaL33 1.0
     set betaRd33 1.0

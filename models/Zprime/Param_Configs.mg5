@@ -1,5 +1,5 @@
     set MZp NP_Mass
-    set WZp auto
+    set WZp NP_Width
     set gZp 1.0
     set zetaq33 1.0
     set zetal33 1.0
