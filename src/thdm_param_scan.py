@@ -624,12 +624,6 @@ class STUCalculator:
             df_result["S_constraint"] = S_constraint_values
             df_result["T_constraint"] = T_constraint_values
             df_result["U_constraint"] = U_constraint_values
-            df_result["S_exp"] = S_exp_values
-            df_result["T_exp"] = T_exp_values
-            df_result["U_exp"] = U_exp_values
-            df_result["S_err"] = S_err_values
-            df_result["T_err"] = T_err_values
-            df_result["U_err"] = U_err_values
             df_result["n_sigma_used"] = n_sigma_used_values
 
         return df_result
