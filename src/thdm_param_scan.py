@@ -3,6 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 import xslha
+from scipy.integrate import quad
 from tqdm.auto import tqdm
 
 
@@ -576,12 +577,6 @@ class STUCalculator:
             S_constraint_values = np.full(n_rows, False)
             T_constraint_values = np.full(n_rows, False)
             U_constraint_values = np.full(n_rows, False)
-            S_exp_values = np.full(n_rows, self.S_exp)
-            T_exp_values = np.full(n_rows, self.T_exp)
-            U_exp_values = np.full(n_rows, self.U_exp)
-            S_err_values = np.full(n_rows, self.S_err)
-            T_err_values = np.full(n_rows, self.T_err)
-            U_err_values = np.full(n_rows, self.U_err)
             n_sigma_used_values = np.full(n_rows, n_sigma)
 
         # Calculate STU for each row
@@ -627,3 +622,309 @@ class STUCalculator:
             df_result["n_sigma_used"] = n_sigma_used_values
 
         return df_result
+
+
+class STUCalculatorAnalytical(STUCalculator):
+    """
+    Enhanced STU Calculator that inherits from STUCalculator but overrides the STU calculation
+    method to use analytical calculations with Passarino-Veltman functions instead of SPheno.
+
+    This provides faster calculations for parameter scans while maintaining the same interface.
+    """
+
+    def __init__(self, spheno_path=None, template_path=None, outputs_dir=None, inputs_dir=None):
+        # Initialize parent class
+        super().__init__(spheno_path, template_path, outputs_dir, inputs_dir)
+
+        # Additional parameter for analytical calculations
+        # Delta_finite is a regularization parameter that cancels in finite differences
+        self.Delta_finite = 0.0  # Can be set to any finite value since it cancels out
+
+    def B0_integrand(self, x, q2, m1_2, m2_2):
+        """Integrand for B0 function"""
+        X = m1_2 * x + m2_2 * (1 - x) - q2 * x * (1 - x)
+        # Add small imaginary part to handle singularities
+        return np.log(X - 1j * 1e-10)
+
+    def B22_integrand(self, x, q2, m1_2, m2_2):
+        """Integrand for B22 function"""
+        X = m1_2 * x + m2_2 * (1 - x) - q2 * x * (1 - x)
+        # Add small imaginary part to handle singularities
+        return X * np.log(X - 1j * 1e-10)
+
+    def B0(self, q2, m1_2, m2_2):
+        """
+        Passarino-Veltman B0 function
+        B0(q²; m1², m2²) = Δ - ∫₀¹ dx log(X - iε)
+        Since Δ contains divergences that cancel in finite differences, we use the finite part
+        """
+        try:
+            # Real part of the integral
+            integral_real, _ = quad(
+                lambda x: np.real(self.B0_integrand(x, q2, m1_2, m2_2)), 0, 1, limit=100
+            )
+            # Imaginary part of the integral
+            integral_imag, _ = quad(
+                lambda x: np.imag(self.B0_integrand(x, q2, m1_2, m2_2)), 0, 1, limit=100
+            )
+
+            return self.Delta_finite - (integral_real + 1j * integral_imag)
+        except:
+            # Fallback for numerical issues
+            return self.Delta_finite
+
+    def B22(self, q2, m1_2, m2_2):
+        """
+        Passarino-Veltman B22 function
+        B₂₂(q²; m1², m2²) = ¼(Δ+1)[m1² + m2² - ⅓q²] - ½∫₀¹ dx X log(X - iε)
+        """
+        try:
+            # Real part of the integral
+            integral_real, _ = quad(
+                lambda x: np.real(self.B22_integrand(x, q2, m1_2, m2_2)), 0, 1, limit=100
+            )
+            # Imaginary part of the integral
+            integral_imag, _ = quad(
+                lambda x: np.imag(self.B22_integrand(x, q2, m1_2, m2_2)), 0, 1, limit=100
+            )
+
+            first_term = 0.25 * (self.Delta_finite + 1) * (m1_2 + m2_2 - q2 / 3)
+            integral = integral_real + 1j * integral_imag
+
+            return first_term - 0.5 * integral
+        except:
+            # Fallback for numerical issues
+            return 0.25 * (self.Delta_finite + 1) * (m1_2 + m2_2 - q2 / 3)
+
+    def mathcal_B0(self, q2, m1_2, m2_2):
+        """
+        Finite B0 function: ℬ₀(q²; m1², m2²) = B₀(q²; m1², m2²) - B₀(0; m1², m2²)
+        """
+        return self.B0(q2, m1_2, m2_2) - self.B0(0, m1_2, m2_2)
+
+    def mathcal_B22(self, q2, m1_2, m2_2):
+        """
+        Finite B22 function: ℬ₂₂(q²; m1², m2²) = B₂₂(q²; m1², m2²) - B₂₂(0; m1², m2²)
+        """
+        return self.B22(q2, m1_2, m2_2) - self.B22(0, m1_2, m2_2)
+
+    def F_function(self, m1_2, m2_2):
+        """
+        F function: ℱ(m1², m2²) = ½(m1² + m2²) - (m1²m2²)/(m1² - m2²) log(m1²/m2²)
+        """
+        # Convert to numpy arrays for vectorized operations
+        m1_2 = np.asarray(m1_2)
+        m2_2 = np.asarray(m2_2)
+
+        # Handle degenerate case where m1² ≈ m2²
+        degenerate = np.abs(m1_2 - m2_2) < 1e-10
+        result = np.zeros_like(m1_2 + m2_2)  # Create array with proper broadcasting
+
+        # For degenerate cases, use L'Hôpital's rule: lim_{m2²→m1²} F(m1², m2²) = m1²
+        result[degenerate] = m1_2[degenerate] if np.any(degenerate) else 0
+
+        # For non-degenerate cases
+        non_degenerate = ~degenerate
+        if np.any(non_degenerate):
+            m1_nd = m1_2[non_degenerate]
+            m2_nd = m2_2[non_degenerate]
+
+            # Avoid division by zero and log of negative numbers
+            ratio = np.where(m2_nd > 0, m1_nd / m2_nd, 1.0)
+            log_ratio = np.log(np.abs(ratio))
+
+            result[non_degenerate] = (
+                0.5 * (m1_nd + m2_nd) - (m1_nd * m2_nd) / (m1_nd - m2_nd) * log_ratio
+            )
+
+        return result
+
+    def mathcal_H(self, MV2, Mh, MH, cos_ba_2, sin_ba_2):
+        """
+        ℋ(M_V²) function used in S and U calculations
+        """
+        MV = np.sqrt(MV2)
+        Mh_2 = Mh**2
+        MH_2 = MH**2
+        Mh_ref_2 = self.Mh_ref**2
+
+        term1 = sin_ba_2 * (
+            self.mathcal_B22(MV2, MV2, Mh_2) - MV2 * self.mathcal_B0(MV2, MV2, Mh_2)
+        )
+        term2 = cos_ba_2 * (
+            self.mathcal_B22(MV2, MV2, MH_2) - MV2 * self.mathcal_B0(MV2, MV2, MH_2)
+        )
+        term3 = -(self.mathcal_B22(MV2, MV2, Mh_ref_2) - MV2 * self.mathcal_B0(MV2, MV2, Mh_ref_2))
+
+        return (1 / (np.pi * MV2)) * (term1 + term2 + term3)
+
+    def calculate_S(self, Mh, MH, MA, MHp, cos_ba, sin_ba):
+        """
+        Calculate S parameter
+        """
+        cos_ba_2 = cos_ba**2
+        sin_ba_2 = sin_ba**2
+
+        MZ2 = self.MZ**2
+        Mh_2 = Mh**2
+        MH_2 = MH**2
+        MA_2 = MA**2
+        MHp_2 = MHp**2
+        Mh_ref_2 = self.Mh_ref**2
+
+        # First line of S equation
+        term1 = sin_ba_2 * (
+            self.mathcal_B22(MZ2, MZ2, Mh_2)
+            - MZ2 * self.mathcal_B0(MZ2, MZ2, Mh_2)
+            + self.mathcal_B22(MZ2, MH_2, MA_2)
+        )
+
+        # Second line of S equation
+        term2 = cos_ba_2 * (
+            self.mathcal_B22(MZ2, MZ2, MH_2)
+            - MZ2 * self.mathcal_B0(MZ2, MZ2, MH_2)
+            + self.mathcal_B22(MZ2, Mh_2, MA_2)
+        )
+
+        # Third line of S equation
+        term3 = (
+            -self.mathcal_B22(MZ2, MHp_2, MHp_2)
+            - self.mathcal_B22(MZ2, MZ2, Mh_ref_2)
+            + MZ2 * self.mathcal_B0(MZ2, MZ2, Mh_ref_2)
+        )
+
+        return (1 / (np.pi * MZ2)) * (term1 + term2 + term3)
+
+    def calculate_T(self, Mh, MH, MA, MHp, cos_ba, sin_ba):
+        """
+        Calculate T parameter
+        """
+        cos_ba_2 = cos_ba**2
+        sin_ba_2 = sin_ba**2
+
+        MW2 = self.MW**2
+        MZ2 = self.MZ**2
+        Mh_2 = Mh**2
+        MH_2 = MH**2
+        MA_2 = MA**2
+        MHp_2 = MHp**2
+        Mh_ref_2 = self.Mh_ref**2
+
+        # First line of T equation
+        term1 = sin_ba_2 * (
+            self.F_function(MHp_2, MH_2)
+            - self.F_function(MH_2, MA_2)
+            + 3 * self.F_function(MZ2, Mh_2)
+            - 3 * self.F_function(MW2, Mh_2)
+        )
+
+        # Second line of T equation
+        term2 = cos_ba_2 * (
+            self.F_function(MHp_2, Mh_2)
+            - self.F_function(Mh_2, MA_2)
+            + 3 * self.F_function(MZ2, MH_2)
+            - 3 * self.F_function(MW2, MH_2)
+        )
+
+        # Third line of T equation
+        term3 = (
+            self.F_function(MHp_2, MA_2)
+            - 3 * self.F_function(MZ2, Mh_ref_2)
+            + 3 * self.F_function(MW2, Mh_ref_2)
+        )
+
+        return (1 / (16 * np.pi * MW2 * self.sw2)) * (term1 + term2 + term3)
+
+    def calculate_U(self, Mh, MH, MA, MHp, cos_ba, sin_ba):
+        """
+        Calculate U parameter
+        """
+        cos_ba_2 = cos_ba**2
+        sin_ba_2 = sin_ba**2
+
+        MW2 = self.MW**2
+        MZ2 = self.MZ**2
+        Mh_2 = Mh**2
+        MH_2 = MH**2
+        MA_2 = MA**2
+        MHp_2 = MHp**2
+
+        # First line: ℋ(M_W²) - ℋ(M_Z²)
+        H_MW = self.mathcal_H(MW2, Mh, MH, cos_ba_2, sin_ba_2)
+        H_MZ = self.mathcal_H(MZ2, Mh, MH, cos_ba_2, sin_ba_2)
+        term1 = H_MW - H_MZ
+
+        # Second and third lines: W boson contributions
+        term2 = (1 / (np.pi * MW2)) * (
+            cos_ba_2 * self.mathcal_B22(MW2, MHp_2, Mh_2)
+            + sin_ba_2 * self.mathcal_B22(MW2, MHp_2, MH_2)
+            + self.mathcal_B22(MW2, MHp_2, MA_2)
+            - 2 * self.mathcal_B22(MW2, MHp_2, MHp_2)
+        )
+
+        # Fourth and fifth lines: Z boson contributions
+        term3 = -(1 / (np.pi * MZ2)) * (
+            cos_ba_2 * self.mathcal_B22(MZ2, Mh_2, MA_2)
+            + sin_ba_2 * self.mathcal_B22(MZ2, MH_2, MA_2)
+            - self.mathcal_B22(MZ2, MHp_2, MHp_2)
+        )
+
+        return term1 + term2 + term3
+
+    def calculate_STU(self, MHH, MHA, MHp, epsilon, lam5, input_file=None, output_file=None):
+        """
+        Override the parent method to use analytical calculations instead of SPheno.
+
+        Parameters:
+        -----------
+        MHH : float
+            Heavy Higgs mass
+        MHA : float
+            Pseudoscalar Higgs mass
+        MHp : float
+            Charged Higgs mass
+        epsilon : float
+            Mixing parameter
+        lam5 : float
+            Lambda5 parameter
+        input_file : str, optional
+            Not used in this implementation (kept for compatibility)
+        output_file : str, optional
+            Not used in this implementation (kept for compatibility)
+
+        Returns:
+        --------
+        tuple : (S, T, U)
+            STU parameters calculated analytically
+        """
+        try:
+            # Get THDM parameters from input masses and mixing
+            params = get_params_vectorized(
+                MHH, MHA, MHp, epsilon, lam5, tb=10, vev=246.22, mhl=125.35
+            )
+
+            # Extract relevant parameters
+            Mh = 125.35  # Light Higgs mass (SM-like)
+            MH = MHH  # Heavy Higgs mass
+            MA = MHA  # Pseudoscalar mass
+            MHplus = MHp  # Charged Higgs mass
+
+            # Get mixing angles
+            cos_ba = params["cba"]
+            sin_ba = params["sba"]
+
+            # Calculate STU parameters
+            S = self.calculate_S(Mh, MH, MA, MHplus, cos_ba, sin_ba)
+            T = self.calculate_T(Mh, MH, MA, MHplus, cos_ba, sin_ba)
+            U = self.calculate_U(Mh, MH, MA, MHplus, cos_ba, sin_ba)
+
+            # Take real parts (imaginary parts should be negligible for physical parameters)
+            S_real = np.real(S)
+            T_real = np.real(T)
+            U_real = np.real(U)
+
+            return (S_real, T_real, U_real)
+
+        except Exception as e:
+            print(f"Error in analytical STU calculation: {str(e)}")
+            return (None, None, None)
