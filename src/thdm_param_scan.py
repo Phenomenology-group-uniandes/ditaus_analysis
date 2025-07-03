@@ -325,7 +325,7 @@ class STUCalculator:
         if not os.path.exists(self.template_path):
             raise FileNotFoundError(f"Template file not found at {self.template_path}")
 
-    def check_stu_constraints(self, S, T, U, verbose=False):
+    def check_stu_constraints(self, S, T, U):
 
         S_constraint = abs(S - self.S_exp) <= self.S_err if S is not None else False
         T_constraint = abs(T - self.T_exp) <= self.T_err if T is not None else False
@@ -535,7 +535,85 @@ class STUCalculator:
         return (S, T, U)
 
     def calculate_STU_with_constraints(
-        self, MHH, MHA, MHp, epsilon, lam5, input_file=None, output_file=None, verbose=False
+        self, MHH, MHA, MHp, epsilon, lam5, input_file=None, output_file=None
     ):
         S, T, U = self.calculate_STU(MHH, MHA, MHp, epsilon, lam5, input_file, output_file)
-        return self.check_stu_constraints(S, T, U, verbose=verbose)
+        return self.check_stu_constraints(S, T, U)
+
+    def calculate_STU_dataframe(self, df, verbose=False):
+        """
+        Calculate STU parameters for all rows in a dataframe and add constraint columns.
+
+        Parameters:
+        -----------
+        df : pandas.DataFrame
+            DataFrame containing columns: 'MHH', 'MHA', 'MHp', 'epsilon', 'lam5'
+        verbose : bool, optional
+            If False, only adds S, T, U, and STU_constraint columns
+            If True, adds all constraint details including experimental values and errors
+
+        Returns:
+        --------
+        pandas.DataFrame
+            Copy of input dataframe with additional STU constraint columns
+        """
+        df_result = df.copy()
+
+        # Initialize columns for STU parameters
+        n_rows = len(df_result)
+        S_values = np.full(n_rows, np.nan)
+        T_values = np.full(n_rows, np.nan)
+        U_values = np.full(n_rows, np.nan)
+        STU_constraint_values = np.full(n_rows, False)
+
+        if verbose:
+            S_constraint_values = np.full(n_rows, False)
+            T_constraint_values = np.full(n_rows, False)
+            U_constraint_values = np.full(n_rows, False)
+            S_exp_values = np.full(n_rows, self.S_exp)
+            T_exp_values = np.full(n_rows, self.T_exp)
+            U_exp_values = np.full(n_rows, self.U_exp)
+            S_err_values = np.full(n_rows, self.S_err)
+            T_err_values = np.full(n_rows, self.T_err)
+            U_err_values = np.full(n_rows, self.U_err)
+
+        # Calculate STU for each row
+        for i, row in df_result.iterrows():
+            try:
+                result = self.calculate_STU_with_constraints(
+                    row["MHH"], row["MHA"], row["MHp"], row["epsilon"], row["lam5"]
+                )
+
+                S_values[i] = result["S"] if result["S"] is not None else np.nan
+                T_values[i] = result["T"] if result["T"] is not None else np.nan
+                U_values[i] = result["U"] if result["U"] is not None else np.nan
+                STU_constraint_values[i] = result["STU_constraint"]
+
+                if verbose:
+                    S_constraint_values[i] = result["S_constraint"]
+                    T_constraint_values[i] = result["T_constraint"]
+                    U_constraint_values[i] = result["U_constraint"]
+
+            except Exception as e:
+                print(f"Error calculating STU for row {i}: {str(e)}")
+                # Values remain as initialized (nan/False)
+                continue
+
+        # Add columns to dataframe
+        df_result["S"] = S_values
+        df_result["T"] = T_values
+        df_result["U"] = U_values
+        df_result["STU_constraint"] = STU_constraint_values
+
+        if verbose:
+            df_result["S_constraint"] = S_constraint_values
+            df_result["T_constraint"] = T_constraint_values
+            df_result["U_constraint"] = U_constraint_values
+            df_result["S_exp"] = S_exp_values
+            df_result["T_exp"] = T_exp_values
+            df_result["U_exp"] = U_exp_values
+            df_result["S_err"] = S_err_values
+            df_result["T_err"] = T_err_values
+            df_result["U_err"] = U_err_values
+
+        return df_result
