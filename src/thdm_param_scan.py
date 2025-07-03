@@ -325,11 +325,11 @@ class STUCalculator:
         if not os.path.exists(self.template_path):
             raise FileNotFoundError(f"Template file not found at {self.template_path}")
 
-    def check_stu_constraints(self, S, T, U):
+    def check_stu_constraints(self, S, T, U, n_sigma=1.0):
 
-        S_constraint = abs(S - self.S_exp) <= self.S_err if S is not None else False
-        T_constraint = abs(T - self.T_exp) <= self.T_err if T is not None else False
-        U_constraint = abs(U - self.U_exp) <= self.U_err if U is not None else False
+        S_constraint = abs(S - self.S_exp) <= (n_sigma * self.S_err) if S is not None else False
+        T_constraint = abs(T - self.T_exp) <= (n_sigma * self.T_err) if T is not None else False
+        U_constraint = abs(U - self.U_exp) <= (n_sigma * self.U_err) if U is not None else False
 
         STU_constraint = S_constraint and T_constraint and U_constraint
 
@@ -341,6 +341,7 @@ class STUCalculator:
             "T_constraint": T_constraint,
             "U_constraint": U_constraint,
             "STU_constraint": STU_constraint,
+            "n_sigma_used": n_sigma,
             "S_exp": self.S_exp,
             "T_exp": self.T_exp,
             "U_exp": self.U_exp,
@@ -535,12 +536,12 @@ class STUCalculator:
         return (S, T, U)
 
     def calculate_STU_with_constraints(
-        self, MHH, MHA, MHp, epsilon, lam5, input_file=None, output_file=None
+        self, MHH, MHA, MHp, epsilon, lam5, n_sigma=1.0, input_file=None, output_file=None
     ):
         S, T, U = self.calculate_STU(MHH, MHA, MHp, epsilon, lam5, input_file, output_file)
-        return self.check_stu_constraints(S, T, U)
+        return self.check_stu_constraints(S, T, U, n_sigma=n_sigma)
 
-    def calculate_STU_dataframe(self, df, verbose=False):
+    def calculate_STU_dataframe(self, df, n_sigma=1.0, verbose=False):
         """
         Calculate STU parameters for all rows in a dataframe and add constraint columns.
 
@@ -548,6 +549,8 @@ class STUCalculator:
         -----------
         df : pandas.DataFrame
             DataFrame containing columns: 'MHH', 'MHA', 'MHp', 'epsilon', 'lam5'
+        n_sigma : float, optional
+            Number of sigmas to use for constraints (default: 1.0)
         verbose : bool, optional
             If False, only adds S, T, U, and STU_constraint columns
             If True, adds all constraint details including experimental values and errors
@@ -576,12 +579,18 @@ class STUCalculator:
             S_err_values = np.full(n_rows, self.S_err)
             T_err_values = np.full(n_rows, self.T_err)
             U_err_values = np.full(n_rows, self.U_err)
+            n_sigma_used_values = np.full(n_rows, n_sigma)
 
         # Calculate STU for each row
         for i, row in df_result.iterrows():
             try:
                 result = self.calculate_STU_with_constraints(
-                    row["MHH"], row["MHA"], row["MHp"], row["epsilon"], row["lam5"]
+                    row["MHH"],
+                    row["MHA"],
+                    row["MHp"],
+                    row["epsilon"],
+                    row["lam5"],
+                    n_sigma=n_sigma,
                 )
 
                 S_values[i] = result["S"] if result["S"] is not None else np.nan
@@ -604,7 +613,6 @@ class STUCalculator:
         df_result["T"] = T_values
         df_result["U"] = U_values
         df_result["STU_constraint"] = STU_constraint_values
-
         if verbose:
             df_result["S_constraint"] = S_constraint_values
             df_result["T_constraint"] = T_constraint_values
@@ -615,5 +623,6 @@ class STUCalculator:
             df_result["S_err"] = S_err_values
             df_result["T_err"] = T_err_values
             df_result["U_err"] = U_err_values
+            df_result["n_sigma_used"] = n_sigma_used_values
 
         return df_result
