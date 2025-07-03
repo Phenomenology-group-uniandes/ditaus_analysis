@@ -4,10 +4,10 @@
 
 # Use de mg5_env conda environment
 # Activate the conda environment
-source /Collider/anaconda3/etc/profile.d/conda.sh
-conda activate mg5_env || {
-  echo "Failed to activate conda environment 'mg5_env'. Ensure it exists."; exit 1;
-}
+# source /Collider/anaconda3/etc/profile.d/conda.sh
+# conda activate mg5_env || {
+#   echo "Failed to activate conda environment 'mg5_env'. Ensure it exists."; exit 1;
+# }
 
 # Base paths
 PROJECT_DIR=$(pwd)
