@@ -5,6 +5,7 @@ ME5_debug
 nsqso_born.inc
 *.lhe*
 py3*.pkl
+inputs/
 outputs/
 data/
 pdfs/
