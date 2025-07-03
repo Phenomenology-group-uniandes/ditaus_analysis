@@ -7,8 +7,10 @@ nsqso_born.inc
 py3*.pkl
 outputs/
 data/
-
+pdfs/
 spheno/
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
