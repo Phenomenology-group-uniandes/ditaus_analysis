@@ -3,6 +3,7 @@ import os
 import numpy as np
 import pandas as pd
 import xslha
+from tqdm.auto import tqdm
 
 
 def get_params_vectorized(MHH, MHA, MHp, epsilon, lam5, tb=10, vev=246.22, mhl=125.35):
@@ -561,6 +562,8 @@ class STUCalculator:
             Copy of input dataframe with additional STU constraint columns
         """
         df_result = df.copy()
+        # Reset index to ensure consistent iteration
+        df_result.reset_index(drop=True, inplace=True)
 
         # Initialize columns for STU parameters
         n_rows = len(df_result)
@@ -582,7 +585,11 @@ class STUCalculator:
             n_sigma_used_values = np.full(n_rows, n_sigma)
 
         # Calculate STU for each row
-        for i, row in df_result.iterrows():
+        iterator = df_result.iterrows()
+        if verbose:
+            iterator = tqdm(iterator, total=len(df_result), desc="Calculating STU parameters")
+
+        for i, row in iterator:
             try:
                 result = self.calculate_STU_with_constraints(
                     row["MHH"],
