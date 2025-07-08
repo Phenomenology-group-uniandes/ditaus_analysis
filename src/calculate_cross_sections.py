@@ -48,7 +48,7 @@ cards_paths = {
 
 mass_min = 500
 mass_max = 5000
-mass_step = 10
+mass_step = 50
 
 # check that the initial and final mass are connected by the step
 if (mass_max - mass_min) % mass_step != 0:
@@ -92,7 +92,9 @@ for model, ufodir in ufos_dir.items():
             for mass in mass_range:
                 dict1 = cards_paths.copy()
                 launch = param_config_content
-                dict1["PATH_TO_PARAM_CONFIGS"] = launch.replace("NP_Mass", str(mass))
+                launch = launch.replace("NP_Mass", str(mass))
+                launch = launch.replace("NP_Width", str(mass / (16 * np.pi)))
+                dict1["PATH_TO_PARAM_CONFIGS"] = launch
                 dict1["PATH_TO_OUTPUT"] = os.path.join(working_dir, output)
                 lines = change_template(template_launch, dict1)
                 new_f.writelines(lines)
@@ -106,4 +108,4 @@ for model, ufodir in ufos_dir.items():
         xs[f"{model}_{os.path.basename(output)}"] = (
             t["Cross section (pb)"].str.split(" ").str[0].astype(float)
         )
-xs.to_csv(os.path.join(current_folder, "xs_signals.csv"), index=False)
+xs.to_csv(os.path.join(current_folder, "data", "xs_signals.csv"), index=False)

@@ -8,5 +8,5 @@ launch PATH_TO_OUTPUT -m
     
     PATH_TO_RUN_CARD
     PATH_TO_PARAM_CONFIGS
-    set nevents 1000
+    set nevents 10000
 done
