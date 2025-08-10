@@ -7,24 +7,24 @@ from scipy.integrate import quad
 from tqdm.auto import tqdm
 
 
-def get_params_vectorized(MHH, MHA, MHp, epsilon, lam5, tb=10, vev=246.22, mhl=125.35):
+def get_params_vectorized(MHH, MHA, MHp, cba, lam5, sign_sba, tb=10, vev=246.22, mhl=125.35):
+
     MHH = np.asarray(MHH)
     MHA = np.asarray(MHA)
     MHp = np.asarray(MHp)
-    epsilon = np.asarray(epsilon)
+    cba = np.asarray(cba)
 
     beta = np.arctan(tb)
     cb = np.cos(beta)
     sb = np.sin(beta)
 
-    sba = 1 - epsilon
-    cba = np.sqrt(1 - sba**2)
+    sba = np.sin(np.arccos(cba)) * sign_sba
 
     m12sq = (MHA**2 + lam5 * vev**2) * (sb * cb)
 
     lam4 = 2 * (m12sq / (sb * cb) - MHp**2) / vev**2 - lam5
 
-    alpha = beta - np.arccos(cba)
+    alpha = beta - np.arcsin(sba)
     ca = np.cos(alpha)
     sa = np.sin(alpha)
 
@@ -59,31 +59,31 @@ def get_params_vectorized(MHH, MHA, MHp, epsilon, lam5, tb=10, vev=246.22, mhl=1
         "MHH": MHH,
         "MHA": MHA,
         "MHp": MHp,
-        "epsilon": epsilon,
         "cba": cba,
         "sba": sba,
     }
 
 
-def calculate_random_sampling(mass_range, epsilon_range, delta_range, n_samples=100000):
+def calculate_random_sampling(mass_range, cba_range, delta_range, n_samples=100000, tb=10):
     vev = 246.22
     m_higgs = 125.35
     MHH_samples = np.random.uniform(mass_range[0] + m_higgs, mass_range[1], n_samples)
     MHA_samples = np.random.uniform(mass_range[0], mass_range[1], n_samples)
     MHp_samples = np.random.uniform(mass_range[0], mass_range[1], n_samples)
     # MHp_samples = np.random.uniform(570, 900, n_samples)
-    log_eps_samples = np.random.uniform(
-        np.log10(epsilon_range[0]), np.log10(epsilon_range[1]), n_samples
-    )
-    eps_samples = 10**log_eps_samples
+    cba_samples = np.random.uniform(cba_range[0], cba_range[1], n_samples)
 
     delta_samples = np.random.uniform(delta_range[0], delta_range[1], n_samples)
     lam5_samples = (MHH_samples**2 - MHA_samples**2) / vev**2 + delta_samples
+    lam5_samples = np.random.normal(0, 12, n_samples)
+    # Sample the sign of sin(beta-alpha) randomly for each point
+    sign_sba_samples = np.random.choice([-1, 1], size=n_samples)
 
     results = get_params_vectorized(
-        MHH_samples, MHA_samples, MHp_samples, eps_samples, lam5=lam5_samples
+        MHH_samples, MHA_samples, MHp_samples, cba_samples, lam5=lam5_samples, sign_sba=sign_sba_samples, tb=tb
     )
     results["delta_samples"] = delta_samples
+    results["sign_sba"] = sign_sba_samples
 
     df = pd.DataFrame(results)
     return df
@@ -212,15 +212,20 @@ def check_vacuum_conditions(df, verbose=False):
     )
 
     # Combined condition: vacuum stable AND global minimum AND unitarity
-    all_conditions_satisfied = vacuum_stable & global_minimum_condition & unitarity_satisfied
+    all_conditions_satisfied = vacuum_stable & unitarity_satisfied
 
     # ==================== SAVE COLUMNS BASED ON VERBOSE FLAG ====================
     if verbose:
         # Save all individual condition columns for detailed analysis
         df_result["stability_lam1_positive"] = stability_lam1_positive
         df_result["stability_lam2_positive"] = stability_lam2_positive
+        df_result["stability_lam1_2_condition"] = stability_lam1_positive & stability_lam2_positive
         df_result["stability_lam3_condition"] = stability_lam3_condition
         df_result["stability_lam4_condition"] = stability_lam4_condition
+        df_result["stability_lam3_4_condition"] = stability_lam3_condition & stability_lam4_condition
+        df_result["stability_lam1_2_3_4_condition"] = (
+            stability_lam1_positive & stability_lam2_positive & stability_lam3_condition & stability_lam4_condition
+        )
         df_result["global_minimum_condition"] = global_minimum_condition
 
         # Store unitarity parameters for analysis
@@ -252,14 +257,14 @@ def check_vacuum_conditions(df, verbose=False):
         df_result["unitarity_g_minus"] = unitarity_g_minus
 
         # Add intermediate calculations for analysis
-        df_result["k_parameter"] = k
-        df_result["global_min_expression"] = global_min_condition
+        # df_result["k_parameter"] = k
+        # df_result["global_min_expression"] = global_min_condition
 
     # Always save the unified conditions regardless of verbose flag
     df_result["vacuum_stable"] = vacuum_stable
 
     df_result["unitarity_satisfied"] = unitarity_satisfied
-    df_result["all_conditions_satisfied"] = all_conditions_satisfied
+    df_result["Theoretical_constraints_satisfied"] = all_conditions_satisfied
 
     return df_result
 
@@ -352,8 +357,8 @@ class STUCalculator:
             "U_err": self.U_err,
         }
 
-    def get_spheno_params(self, MHH, MHA, MHp, epsilon, lam5):
-        params = get_params_vectorized(MHH, MHA, MHp, epsilon, lam5, tb=10, vev=246.22, mhl=125.35)
+    def get_spheno_params(self, MHH, MHA, MHp, cba, lam5, sign_sba):
+        params = get_params_vectorized(MHH, MHA, MHp, cba, lam5, sign_sba, tb=10, vev=246.22, mhl=125.35)
 
         spheno_params = {}
         spheno_params["lam1"] = str(params["lam1"] / 2.0)
@@ -366,7 +371,7 @@ class STUCalculator:
 
         return spheno_params
 
-    def create_spheno_input(self, MHH, MHA, MHp, epsilon, lam5, input_file=None):
+    def create_spheno_input(self, MHH, MHA, MHp, cba, lam5, sign_sba, input_file=None):
         import os
         import time
 
@@ -375,7 +380,7 @@ class STUCalculator:
             template_content = f.read()
 
         # Create parameter replacements dictionary
-        replacements = self.get_spheno_params(MHH, MHA, MHp, epsilon, lam5)
+        replacements = self.get_spheno_params(MHH, MHA, MHp, cba, lam5, sign_sba=sign_sba)
 
         # Replace placeholders in template
         input_content = template_content
@@ -405,9 +410,7 @@ class STUCalculator:
         # Generate output filename if not provided
         if output_file is None:
             input_file_base_name = os.path.basename(input_file)
-            output_file = os.path.join(
-                self.outputs_dir, input_file_base_name.replace(".in", ".out")
-            )
+            output_file = os.path.join(self.outputs_dir, input_file_base_name.replace(".in", ".out"))
 
         # Generate spectrum file name (.spc file)
         spc_file = output_file.replace(".out", ".spc")
@@ -527,8 +530,8 @@ class STUCalculator:
             print(f"Error parsing SPheno spectrum file {spc_file}: {str(e)}")
             return (None, None, None)
 
-    def calculate_STU(self, MHH, MHA, MHp, epsilon, lam5, input_file=None, output_file=None):
-        input_file = self.create_spheno_input(MHH, MHA, MHp, epsilon, lam5, input_file=input_file)
+    def calculate_STU(self, MHH, MHA, MHp, cba, lam5, sign_sba, input_file=None, output_file=None):
+        input_file = self.create_spheno_input(MHH, MHA, MHp, cba, lam5, sign_sba=sign_sba, input_file=input_file)
         result = self.run_spheno(input_file, output_file=output_file)
         if not result["success"]:
             print(f"Error running SPheno: {result['stderr']}")
@@ -538,9 +541,11 @@ class STUCalculator:
         return (S, T, U)
 
     def calculate_STU_with_constraints(
-        self, MHH, MHA, MHp, epsilon, lam5, n_sigma=1.0, input_file=None, output_file=None
+        self, MHH, MHA, MHp, cba, lam5, sign_sba, n_sigma=1.0, input_file=None, output_file=None
     ):
-        S, T, U = self.calculate_STU(MHH, MHA, MHp, epsilon, lam5, input_file, output_file)
+        S, T, U = self.calculate_STU(
+            MHH, MHA, MHp, cba, lam5, sign_sba, input_file=input_file, output_file=output_file
+        )
         return self.check_stu_constraints(S, T, U, n_sigma=n_sigma)
 
     def calculate_STU_dataframe(self, df, n_sigma=1.0, verbose=False):
@@ -550,7 +555,7 @@ class STUCalculator:
         Parameters:
         -----------
         df : pandas.DataFrame
-            DataFrame containing columns: 'MHH', 'MHA', 'MHp', 'epsilon', 'lam5'
+            DataFrame containing columns: 'MHH', 'MHA', 'MHp', 'cba', 'lam5', 'sign_sba'
         n_sigma : float, optional
             Number of sigmas to use for constraints (default: 1.0)
         verbose : bool, optional
@@ -590,8 +595,9 @@ class STUCalculator:
                     row["MHH"],
                     row["MHA"],
                     row["MHp"],
-                    row["epsilon"],
+                    row["cba"],
                     row["lam5"],
+                    row["sign_sba"],
                     n_sigma=n_sigma,
                 )
 
@@ -660,13 +666,9 @@ class STUCalculatorAnalytical(STUCalculator):
         """
         try:
             # Real part of the integral
-            integral_real, _ = quad(
-                lambda x: np.real(self.B0_integrand(x, q2, m1_2, m2_2)), 0, 1, limit=100
-            )
+            integral_real, _ = quad(lambda x: np.real(self.B0_integrand(x, q2, m1_2, m2_2)), 0, 1, limit=100)
             # Imaginary part of the integral
-            integral_imag, _ = quad(
-                lambda x: np.imag(self.B0_integrand(x, q2, m1_2, m2_2)), 0, 1, limit=100
-            )
+            integral_imag, _ = quad(lambda x: np.imag(self.B0_integrand(x, q2, m1_2, m2_2)), 0, 1, limit=100)
 
             return self.Delta_finite - (integral_real + 1j * integral_imag)
         except:
@@ -680,13 +682,9 @@ class STUCalculatorAnalytical(STUCalculator):
         """
         try:
             # Real part of the integral
-            integral_real, _ = quad(
-                lambda x: np.real(self.B22_integrand(x, q2, m1_2, m2_2)), 0, 1, limit=100
-            )
+            integral_real, _ = quad(lambda x: np.real(self.B22_integrand(x, q2, m1_2, m2_2)), 0, 1, limit=100)
             # Imaginary part of the integral
-            integral_imag, _ = quad(
-                lambda x: np.imag(self.B22_integrand(x, q2, m1_2, m2_2)), 0, 1, limit=100
-            )
+            integral_imag, _ = quad(lambda x: np.imag(self.B22_integrand(x, q2, m1_2, m2_2)), 0, 1, limit=100)
 
             first_term = 0.25 * (self.Delta_finite + 1) * (m1_2 + m2_2 - q2 / 3)
             integral = integral_real + 1j * integral_imag
@@ -733,9 +731,7 @@ class STUCalculatorAnalytical(STUCalculator):
             ratio = np.where(m2_nd > 0, m1_nd / m2_nd, 1.0)
             log_ratio = np.log(np.abs(ratio))
 
-            result[non_degenerate] = (
-                0.5 * (m1_nd + m2_nd) - (m1_nd * m2_nd) / (m1_nd - m2_nd) * log_ratio
-            )
+            result[non_degenerate] = 0.5 * (m1_nd + m2_nd) - (m1_nd * m2_nd) / (m1_nd - m2_nd) * log_ratio
 
         return result
 
@@ -748,12 +744,8 @@ class STUCalculatorAnalytical(STUCalculator):
         MH_2 = MH**2
         Mh_ref_2 = self.Mh_ref**2
 
-        term1 = sin_ba_2 * (
-            self.mathcal_B22(MV2, MV2, Mh_2) - MV2 * self.mathcal_B0(MV2, MV2, Mh_2)
-        )
-        term2 = cos_ba_2 * (
-            self.mathcal_B22(MV2, MV2, MH_2) - MV2 * self.mathcal_B0(MV2, MV2, MH_2)
-        )
+        term1 = sin_ba_2 * (self.mathcal_B22(MV2, MV2, Mh_2) - MV2 * self.mathcal_B0(MV2, MV2, Mh_2))
+        term2 = cos_ba_2 * (self.mathcal_B22(MV2, MV2, MH_2) - MV2 * self.mathcal_B0(MV2, MV2, MH_2))
         term3 = -(self.mathcal_B22(MV2, MV2, Mh_ref_2) - MV2 * self.mathcal_B0(MV2, MV2, Mh_ref_2))
 
         return (1 / (np.pi * MV2)) * (term1 + term2 + term3)
@@ -827,11 +819,7 @@ class STUCalculatorAnalytical(STUCalculator):
         )
 
         # Third line of T equation
-        term3 = (
-            self.F_function(MHp_2, MA_2)
-            - 3 * self.F_function(MZ2, Mh_ref_2)
-            + 3 * self.F_function(MW2, Mh_ref_2)
-        )
+        term3 = self.F_function(MHp_2, MA_2) - 3 * self.F_function(MZ2, Mh_ref_2) + 3 * self.F_function(MW2, Mh_ref_2)
 
         return (1 / (16 * np.pi * MW2 * self.sw2)) * (term1 + term2 + term3)
 
@@ -871,7 +859,7 @@ class STUCalculatorAnalytical(STUCalculator):
 
         return term1 + term2 + term3
 
-    def calculate_STU(self, MHH, MHA, MHp, epsilon, lam5, input_file=None, output_file=None):
+    def calculate_STU(self, MHH, MHA, MHp, cba, lam5, sign_sba, input_file=None, output_file=None):
         """
         Override the parent method to use analytical calculations instead of SPheno.
 
@@ -883,10 +871,12 @@ class STUCalculatorAnalytical(STUCalculator):
             Pseudoscalar Higgs mass
         MHp : float
             Charged Higgs mass
-        epsilon : float
-            Mixing parameter
+        cba : float
+            cos(beta-alpha) mixing parameter
         lam5 : float
             Lambda5 parameter
+        sign_sba : int
+            Sign of sin(beta-alpha): +1 or -1
         input_file : str, optional
             Not used in this implementation (kept for compatibility)
         output_file : str, optional
@@ -899,9 +889,7 @@ class STUCalculatorAnalytical(STUCalculator):
         """
         try:
             # Get THDM parameters from input masses and mixing
-            params = get_params_vectorized(
-                MHH, MHA, MHp, epsilon, lam5, tb=10, vev=246.22, mhl=125.35
-            )
+            params = get_params_vectorized(MHH, MHA, MHp, cba, lam5, sign_sba, tb=10, vev=246.22, mhl=125.35)
 
             # Extract relevant parameters
             Mh = 125.35  # Light Higgs mass (SM-like)
