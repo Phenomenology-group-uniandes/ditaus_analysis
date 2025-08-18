@@ -46,18 +46,16 @@ def process_data_to_histogram(
             continue
 
         # Calculate efficiency
-        efficiency = (
-            len(df) / df["n_events_delphes"].iloc[0] if "n_events_delphes" in df.columns else 1.0
-        )
+        efficiency = len(df) / df["n_events_delphes"].iloc[0] if "n_events_delphes" in df.columns else 1.0
 
         # Calculate normalization factor
         if is_signal:
             # Get scale factor for this channel
             channel_key = f"{model}_{channel_name}"
             scale_factor = scale_factors.get(channel_key, 1.0)
-            normalization_factor = scale_factor / len(data)
+            normalization_factor = scale_factor / len(df)
         else:
-            normalization_factor = 1.0 / len(data)
+            normalization_factor = 1.0 / len(df)
 
         # Calculate weights
         weight = df["cross_section_delphes(pb)"] * lumi * efficiency * normalization_factor
@@ -98,36 +96,39 @@ def calculate_approx_global_significance(
     scale_factors: Dict[str, float],
     observable: str,
     bin_edges: List[float],
-    query: str,
+    queries: List[str],
     lumi: float = 35000,  # pb-1
 ) -> float:
+    assert type(queries) is list, "Queries should be a list of strings."
+    sig = []
+    bkg = []
+    for query in queries:
+        # Process backgrounds
+        histo_bkgs = process_data_to_histogram(
+            backgrounds,
+            bin_edges,
+            query,
+            observable,
+            lumi,
+            is_signal=False,
+        )
 
-    # Process backgrounds
-    histo_bkgs = process_data_to_histogram(
-        backgrounds,
-        bin_edges,
-        query,
-        observable,
-        lumi,
-        is_signal=False,
-    )
+        # Process signals
+        histo_signals = process_data_to_histogram(
+            signals,
+            bin_edges,
+            query,
+            observable,
+            lumi,
+            model,
+            scale_factors,
+            is_signal=True,
+        )
 
-    # Process signals
-    histo_signals = process_data_to_histogram(
-        signals,
-        bin_edges,
-        query,
-        observable,
-        lumi,
-        model,
-        scale_factors,
-        is_signal=True,
-    )
+        # Extract bin contents
+        sig += [histo_signals.GetBinContent(i) for i in range(1, histo_signals.GetNbinsX() + 1)]
 
-    # Extract bin contents
-    sig = [histo_signals.GetBinContent(i) for i in range(1, histo_signals.GetNbinsX() + 1)]
-
-    bkg = [histo_bkgs.GetBinContent(i) for i in range(1, histo_bkgs.GetNbinsX() + 1)]
+        bkg += [histo_bkgs.GetBinContent(i) for i in range(1, histo_bkgs.GetNbinsX() + 1)]
 
     # Calculate approximate global significance
     significance = approx_global_sig(np.array(sig), np.array(bkg))
