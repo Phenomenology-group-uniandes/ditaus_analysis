@@ -158,7 +158,7 @@ class Particle(ABC):
 
 
 class LHEParticle(Particle):
-    def __init__(self, pdgid, spin, px=0, py=0, pz=0, energy=0, mass=0):
+    def __init__(self, pdgid, spin, px=0, py=0, pz=0, energy=0, mass=0, status=1, mother1=0, mother2=0):
         self.pdgid = pdgid
         typep = abs(pdgid)
         if (typep == 2) or (typep == 4) or (typep == 6):
@@ -178,7 +178,48 @@ class LHEParticle(Particle):
         self.tlv.SetPxPyPzE(px, py, pz, energy)
         self.mass = mass
         self.spin = spin
-
+        self.status = status
+        self.mother1 = mother1
+        self.mother2 = mother2
+    
+    def get_mothers(self):
+        """Return list of mother particle indices"""
+        mothers = []
+        if self.mother1 > 0:
+            mothers.append(self.mother1)
+        if self.mother2 > 0 and self.mother2 != self.mother1:
+            mothers.append(self.mother2)
+        return mothers
+    
+    def is_final_state(self):
+        """Check if this is a final state particle"""
+        return self.status == 1
+    
+    def is_from_particle(self, event_particles, target_pdgid):
+        """Check if this particle comes from a specific mother particle type
+        
+        Args:
+            event_particles: List of all particles in the event
+            target_pdgid: PDG ID of the target mother particle (can be list or single value)
+        
+        Returns:
+            PDG ID of the mother particle if found, None otherwise
+        """
+        if isinstance(target_pdgid, (list, tuple)):
+            target_pdgids = target_pdgid
+        else:
+            target_pdgids = [target_pdgid]
+        
+        for mother_idx in self.get_mothers():
+            if mother_idx <= len(event_particles):
+                mother = event_particles[mother_idx - 1]  # Convert to 0-based index
+                if mother.pdgid in target_pdgids:
+                    return mother.pdgid
+                # Check recursively in case of decay chain
+                origin = mother.is_from_particle(event_particles, target_pdgids)
+                if origin:
+                    return origin
+        return None
 
 class Event:
     def __init__(self, num_particles):
@@ -191,6 +232,57 @@ class Event:
     def getParticlesByIDs(self, idlist):
         partlist = [p for p in self.particles if p.pdgid in idlist]
         return partlist
+
+    def get_particles_by_pdgid(self, idlist):
+        """Alias for getParticlesByIDs for consistency with notebook"""
+        return self.getParticlesByIDs(idlist)
+    
+    def get_particles_from_mother(self, mother_pdgid):
+        """Get all final state particles that originate from a specific mother particle
+        
+        Args:
+            mother_pdgid: PDG ID of the mother particle (can be list or single value)
+        
+        Returns:
+            List of particles that come from the specified mother
+        """
+        mother_particles = []
+        for particle in self.particles:
+            if particle.is_final_state():
+                origin = particle.is_from_particle(self.particles, mother_pdgid)
+                if origin == mother_pdgid or (isinstance(mother_pdgid, (list, tuple)) and origin in mother_pdgid):
+                    mother_particles.append(particle)
+        return mother_particles
+    
+    def get_particles_by_mother_origin(self, pdgid_list, mother_pdgids):
+        """Get particles by PDG ID, classified by mother particle origin
+        
+        Args:
+            pdgid_list: List of particle PDG IDs to search for
+            mother_pdgids: List of mother PDG IDs to classify by
+        
+        Returns:
+            dict: {mother_pdgid: [...particles...], 'other': [...]}
+        """
+        result = {str(mother_id): [] for mother_id in mother_pdgids}
+        result['other'] = []
+        
+        particles = self.get_particles_by_pdgid(pdgid_list)
+        
+        for particle in particles:
+            if particle.is_final_state():
+                classified = False
+                for mother_id in mother_pdgids:
+                    origin = particle.is_from_particle(self.particles, mother_id)
+                    if origin == mother_id:
+                        result[str(mother_id)].append(particle)
+                        classified = True
+                        break
+                
+                if not classified:
+                    result['other'].append(particle)
+        
+        return result
 
     def getMissingET(self, idlist: list = [12, 14, 16, -12, -14, -16]):
         met_list = self.getParticlesByIDs(idlist)
@@ -246,6 +338,9 @@ def get_event_by_child(child):
             float(part_data[8]),  # pz
             float(part_data[9]),  # E
             float(part_data[10]),  # m
+            int(part_data[1]),  # status
+            int(part_data[2]),  # mother1
+            int(part_data[3])   # mother2
         )
         e.__addParticle__(p)
     return e
