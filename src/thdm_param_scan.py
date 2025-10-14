@@ -89,6 +89,31 @@ def calculate_random_sampling(mass_range, cba_range, delta_range, n_samples=1000
     return df
 
 
+def calculate_random_sampling_v2(mass_range, cba_range, delta_range, n_samples=100000, tb=10):
+    vev = 246.22
+    m_higgs = 125.35
+    MHH_samples = np.random.uniform(m_higgs, mass_range[1] + 3.0 * m_higgs, n_samples)
+    MHA_samples = np.random.uniform(mass_range[0], mass_range[1], n_samples)
+    MHp_samples = np.random.uniform(800, mass_range[1], n_samples)
+    # MHp_samples = np.random.uniform(570, 900, n_samples)
+    cba_samples = np.random.uniform(cba_range[0], cba_range[1], n_samples)
+
+    # delta_samples = np.random.uniform(delta_range[0], delta_range[1], n_samples)
+    # lam5_samples = (MHH_samples**2 - MHA_samples**2) / vev**2 + delta_samples
+    lam5_samples = np.random.uniform(-9, 1.0, n_samples)
+    # Sample the sign of sin(beta-alpha) randomly for each point
+    sign_sba_samples = np.random.choice([-1, 1], size=n_samples)
+
+    results = get_params_vectorized(
+        MHH_samples, MHA_samples, MHp_samples, cba_samples, lam5=lam5_samples, sign_sba=sign_sba_samples, tb=tb
+    )
+    # results["delta_samples"] = delta_samples
+    results["sign_sba"] = sign_sba_samples
+
+    df = pd.DataFrame(results)
+    return df
+
+
 def check_vacuum_conditions(df, verbose=False):
     df_result = df.copy()
 
