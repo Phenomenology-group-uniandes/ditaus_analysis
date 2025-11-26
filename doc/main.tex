@@ -1,0 +1,411 @@
+% !TEX program = pdflatex
+
+\documentclass[11pt,a4paper,oneside]{memoir}
+
+% ---------------------- Paquetes y codificación ----------------------
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+
+% ---------------------- Tipografía ----------------------
+
+\usepackage{mathpazo} % Palatino-like text + math
+\linespread{1.05}
+
+% ---------------------- Colores y enlaces ----------------------
+
+\usepackage{xcolor}
+\definecolor{Primary}{HTML}{003366}
+\definecolor{Accent}{HTML}{D9534F}
+
+\usepackage[hidelinks]{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=Primary,
+    citecolor=Accent,
+    urlcolor=Accent,
+    pdftitle={Probing BSM signatures on ditau channels at the LHC},
+    pdfauthor={A. Flórez, C. Rodriguez, J. Jones-Pérez, J. Reyes, AC. Parra},
+}
+
+% ---------------------- Mejoras para figuras/tablas ----------------------
+
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{bigstrut}
+\usepackage{multirow}
+\usepackage{dcolumn}
+
+% ---------------------- Matemáticas ----------------------
+
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{siunitx,physics}
+\usepackage{slashed}
+\usepackage{braket}
+\usepackage{bm}
+\usepackage{cancel}
+
+% ---------------------- Otros paquetes ----------------------
+
+\usepackage[normalem]{ulem}
+\usepackage{lipsum}
+
+% ---------------------- Márgenes y encabezados ----------------------
+
+\usepackage[inner=3cm,outer=2.5cm,top=3cm,bottom=3cm]{geometry}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\fancyhead[L]{\small\textsc{Grupo de Fenomenología}}
+\fancyhead[R]{\small\textsc{ditaus\_analysis}}
+\fancyfoot[C]{\thepage}
+
+% ---------------------- Portada bonita ----------------------
+
+\usepackage{titling}
+\pretitle{\vspace*{1cm}\begin{center}\Huge\bfseries\color{Primary}}
+\posttitle{\par\end{center}\vspace{0.5cm}}
+\preauthor{\begin{center}\large}
+\postauthor{\end{center}}
+\predate{\begin{center}\large}
+\postdate{\end{center}}
+
+% ---------------------- Comandos personalizados ----------------------
+
+\newcommand{\ord}[1]{\mathcal{O}\left({#1}\right)}
+\newcommand{\JJP}[1]{{\color{blue} [JJP: #1]}}
+\newcommand{\JJPadd}[1]{{\color{blue} #1}}
+\newcommand{\CFR}[1]{{\color{purple} #1}}
+\newcommand{\AF}[1]{{\color{brown} [AF: #1]}}
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+% ---------------------- Entornos personalizados ----------------------
+
+\newenvironment{acknowledgments}
+{\chapter*{Acknowledgments}}
+{}
+
+% ---------------------- Documento ----------------------
+
+\title{Probing BSM signatures on ditau channels at the LHC}
+\author{A. Flórez, C. Rodriguez, J. Jones-Pérez, J. Reyes, AC. Parra}
+\date{\today}
+
+\begin{document}
+
+% Portada
+\begin{titlingpage}
+    \centering
+    {\color{Primary}\Huge\bfseries Probing BSM signatures on ditau channels at the LHC \\[0.5em]}
+    
+    \vspace{1.5em}
+    
+    {\large \textsc{Technical Report}}\\[2em]
+    
+    \HRule \\[1.5em]
+    
+    {\large \textsc{Authors:}}\\[0.5em]
+    A. Flórez\footnote{ca.florez@uniandes.edu.co}, \hfill C. Rodriguez\footnote{c.rodriguez45@uniandes.edu.co}, \hfill J. Reyes\footnote{j.reyesv@uniandes.edu.co}, \hfill AC. Parra\footnote{a.parrao@uniandes.edu.co}\\
+    Departamento de F\'isica, Universidad de Los Andes, Cra. 1 \# 18a-12, Bogot\'a, Colombia\\[0.8em]
+    
+    J. Jones-P\'erez\footnote{jones.j@pucp.edu.pe}\\
+    Secci\'on F\'isica, Departamento de Ciencias, Pontificia Universidad Cat\'olica del Per\'u, Apartado 1761, Lima, Peru\\[0.8em]
+    
+    
+    {\large \textsc{Date:} \today}\\[2em]
+    
+    \vfill
+    
+    \HRule \\[1em]
+\end{titlingpage}
+
+\tableofcontents
+\clearpage
+
+\chapter{Scalar leptoquark $\tilde S_1$}
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=.6\linewidth]{Images/non-res_scalar.pdf}
+    \caption{Caption}
+\end{figure}
+Scalar leptoquarks (LQs) are hypothetical bosons that couple simultaneously to a quark and a lepton, and appear in various extensions of the Standard Model (SM), such as grand unified theories and models with extended gauge symmetries. Among the different LQ representations, scalar singlets under $SU(2)_L$ offer a minimal and renormalizable setup, making them suitable candidates for simplified model studies.
+
+We focus on the scalar leptoquark $\tilde{S}_1 \sim (\bar{\mathbf{3}}, \mathbf{1}, 8/3)$, which allows for the gauge-invariant operator $\overline{d}_R^C \tilde{S}_1 e_R$. The most general renormalizable Lagrangian involving this field reads
+\begin{equation}
+    \mathcal{L}\supset |D_\mu\tilde{S}_1|^2  + V_{\text{ext}}(\tilde{S}_1,H) + \tilde{y}_{ij} \overline{d}_R^{C\,i} \tilde{S}_1 e_R^j + \tilde{z}_{ij} \overline{u}_R^{C\,i} \tilde{S}_1^* u_R^j + \text{h.c.}
+\end{equation}
+where $\tilde{y}_{ij}$ and $\tilde{z}_{ij}$ are complex Yukawa matrices in flavor space, with $\tilde{z}_{ij}$ antisymmetric due to Fermi statistics. The scalar potential is extended to include the terms
+\begin{equation}
+    \mathcal{V}\supset V_{\text{ext}} = \mu_{\tilde{S}_1}^2 |\tilde{S}_1|^2 + \lambda_{\tilde{S}_1} |\tilde{S}_1|^4 + \lambda_{H\tilde{S}_1} |H|^2 |\tilde{S}_1|^2,
+\end{equation}
+leading to a mass term $m_{\tilde{S}_1}^2 = \mu_{\tilde{S}_1}^2 + \frac{1}{2}\lambda_{H\tilde{S}_1}v^2$ after electroweak symmetry breaking (EWSB). The Higgs portal coupling also induces interactions between $\tilde{S}_1$ and the physical Higgs boson $h$:
+\begin{equation}
+    \mathcal{L}_{\text{int}} \supset \lambda_{H\tilde{S}_1} v h |\tilde{S}_1|^2 + \frac{1}{2}\lambda_{H\tilde{S}_1} h^2 |\tilde{S}_1|^2.
+\end{equation}
+Gauge interactions arise from the covariant derivative:
+\begin{equation}
+    D_\mu \tilde{S}_1 = \partial_\mu \tilde{S}_1 + i g_s T^a G_\mu^a \tilde{S}_1 + i \frac{4}{3} g' B_\mu \tilde{S}_1.
+\end{equation}
+
+Assuming flavor alignment with dominant third-generation couplings, we take $\tilde{y}_{33} \gg \tilde{y}_{ij}$ for $i,j\ne 3$, leading to $\mathrm{BR}(\tilde{S}_1 \to b\tau) \approx 1$. The Yukawa structure implies that $\tilde{S}_1$ couples exclusively to right-chiral $\tau$ leptons, resulting in a dominant $\tau^+_L \tau^-_R$ polarization configuration in pair-production channels. This polarization asymmetry is a distinctive feature that can be probed via $\tau$ decay observables.
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=.95\linewidth]{Images/xs_sLQ_tau_tau.pdf}
+    \caption{Cross section for scalar leptoquark (scalar-LQ) $t$-channel mediated $\mathrm{p p}\to\tau^+\tau^-$ process at $\sqrt{s}=13.0\; \si{\tera\electronvolt}$. The coupling is fixed to  $\tilde{y}_{33} = 1.0$.}\label{fig:cross_section_scalar-LQ}
+\end{figure}
+It is worth noting that, due to the right-handed structure of the Yukawa interaction, the scalar leptoquark $\tilde{S}_1$ couples only to right-chiral tau leptons. As a result, the dominant contribution to the $\tau^+\tau^-$ final state originates from the configuration where the outgoing taus have opposite helicities, specifically $\tau^+_L \tau^-_R$. This polarization asymmetry provides a characteristic signature that could be probed using polarization-sensitive observables, such as the asymmetry in the charged energy of the products of the $\tau$ decay. Figure~\ref{fig:cross_section_scalar-LQ} shows the integrated production cross sections at $\sqrt{s} = 13.6\; \si{\tera\electronvolt}$ assuming a fixed coupling $\tilde{y}_{33} = 1.0$.
+
+
+\chapter{Vector leptoquark $U_1$}
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=.6\linewidth]{Images/non-res.pdf}
+    \caption{Caption}
+\end{figure}
+
+\begin{eqnarray}
+\label{eq:BasicLagrangian}
+  \mathcal{L}_{U_1}&=&-\frac{1}{2}U^\dagger_{\mu\nu}U^{\mu\nu}+M_U^2\, U_{1\mu}^\dagger U_1^\mu \nonumber \\
+ &&  -ig_s\,U_{1\mu}^\dagger\, T^a\, U_{1\nu}\, G^{a\mu\nu}\!\!-i\frac{2}{3}g'\,U^\dagger_{1\mu}U_{1\nu}B^{\mu\nu} \nonumber \\
+ && +\frac{g_U}{\sqrt 2}\big[U_{1\mu}\big(\beta_L^{ij} \bar Q_i\,\gamma^\mu L_i + \beta^{ij}_{R}\,\bar d_{R}^i\,\gamma^\mu e^j_{R}\big) +\text{h.c.}\big] 
+\end{eqnarray}
+where $U_{\mu\nu}\equiv\mathcal{D}_\mu U_{1\nu}-\mathcal{D}_\nu U_{1\mu}$, and $\mathcal{D}_\mu\equiv\partial_\mu+ig_s T^a G_\mu^a+i\tfrac{2}{3}g'B_\mu$. As evidenced by the second line above, we assume that the $\text{vector-LQ}$ has a gauge origin.
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=.95\linewidth]{Images/xs_vLQ_tau_tau.pdf}
+    \caption{Cross section to $\tau^+\tau^-$ final states mediated for a vector-LQ in $t$-channel, showing different $\tau$ polarization configurations as a function of vector-LQ mass at $\sqrt{s}=13.0 \si{\tera\electronvolt}$. The couplings are fixed to $g_U = 1.0$ and $\beta_R^{b\tau} = -0.85$.}\label{fig:cross_section}
+\end{figure}
+
+\begin{align}
+\abs{\mathcal{M}(\tau^+_L \tau^-_L)}^2 &\propto g_U^4 (\tanh \eta + 1)^2, \\
+\abs{\mathcal{M}(\tau^+_L \tau^-_R)}^2 = \abs{\mathcal{M}(\tau^+_R \tau^-_L)}^2 &\propto 4 g_U^4 \beta_R^2, \\
+\abs{\mathcal{M}(\tau^+_R \tau^-_R)}^2 &\propto g_U^4 (\tanh \eta + 1)^2 \beta_R^4,
+\end{align}
+where $\eta$ denotes the pseudorapidity of the $\tau$ lepton with respect to the incident $b$-quark direction, or equivalently, the pseudorapidity of the anti-$\tau$ lepton with respect to the incident $\bar b$-quark direction. Figure~\ref{fig:cross_section} shows the $\eta$-integrated production cross sections computed for an intermediate benchmark point with fixed couplings $g_U = 1.0$ and $\beta_R^{b\tau} = -0.85$.
+
+We define the polarization asymmetry $\mathcal{P}_{\tau^-}$ of the $\tau$ lepton as the difference between the right-handed and left-handed contributions, normalized by their sum:
+\begin{equation}
+    \mathcal{P}_{\tau^-} = \frac{\abs{\mathcal{M}_R}^2 - \abs{\mathcal{M}_L}^2}{\abs{\mathcal{M}_R}^2 + \abs{\mathcal{M}_L}^2} = \frac{(\tanh (\eta)+1)^2\left(\beta_{R}^4-1\right)}{\left(\tanh(\eta)+1\right)^2(1+\beta_R^4)+8 \beta_{R}^2},      
+\end{equation}
+could be probed using polarization-sensitive observables like the asymmetry in the charged energy of the products of the $\tau$ decay.
+\begin{align}
+    \abs{\mathcal{M}_R}^2&=\frac{1}{2}\left(\abs{\mathcal{M}({\tau^+_R \tau^-_R})}^2 + \abs{\mathcal{M}({\tau^+_L \tau^-_R})}^2\right), \\
+    \abs{\mathcal{M}_L}^2&=\frac{1}{2}\left(\abs{\mathcal{M}({\tau^+_L \tau^-_L})}^2 + \abs{\mathcal{M}({\tau^+_R \tau^-_L})}^2\right).
+\end{align}
+we do not have a well-defined direction for the incoming $b$-quark due to we do not know which proton the $b$-quark comes from. So in average, we must promediate the two proton directions, 
+\begin{equation}
+    \mathcal{P}_{\tau^-}^{\text{avg}} = \frac{1}{2}\big(\mathcal{P}_{\tau^-}(\eta) + \mathcal{P}_{\tau^-}(-\eta)\big).
+\end{equation}
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=.95\linewidth]{Images/P_vlQ_tau_minus_vs_eta_avg.pdf}
+    \caption{The average polarization asymmetry $\mathcal{P}_{\tau^-}^{\text{avg}}$ of the $\tau$ lepton as a function of its pseudorapidity $\eta$ for different values of the $\beta_R^{b\tau}$ parameter.}\label{fig:polarization_asymmetry_avg}
+\end{figure}
+
+
+\chapter{$Z'_{B-L}$ Model}
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=.6\linewidth]{Images/DY.pdf}
+    \caption{Caption}
+\end{figure}
+
+Accordingly, we assume the $\text{Z}'$ only couples to third-generation fermions. Our simplified model is thus extended by:
+\begin{eqnarray}
+    \label{eq:BasicLagrangianZp}
+        \mathcal{L}_{Z^{\prime}}&= & -\frac{1}{4} Z_{\mu \nu}^{\prime} Z^{\prime \mu \nu}+\frac{1}{2} M_{Z^{\prime}}^2 Z_\mu^{\prime} Z^{\prime \mu} \nonumber \\
+        && + \frac{g_{Z^{\prime}}}{2 \sqrt{6}} Z^{\prime \mu} (\zeta_q \bar{Q}_3 \gamma_\mu Q_3 -3 \zeta_{\ell} \bar{L}_3 \gamma_\mu L_3 \\
+        && \qquad +\zeta_t \bar{t}_R \gamma_\mu t_R  +\zeta_b \bar{b}_R \gamma_\mu b_R-3 \zeta_\tau \bar{\tau}_R \gamma_\mu \tau_R)
+\end{eqnarray}
+where the constants $M_{\text{Z}^{\prime}}$, $g_{Z^{\prime}}$, $\zeta_q $, $\zeta_t $, $\zeta_b$, $\zeta_{\ell}$, $\zeta_\tau$, are model-dependent.
+
+Unlike the $U_1$ vector leptoquark, the polarization of the $\tau$ lepton implies the opposite polarization of the anti-$\tau$ lepton, due to their production in the same chiral line. To differentiate the contributions of each $\zeta$ parameter, we have calculated the amplitudes for the different initial and final state polarizations, which are given by:
+\begin{align}
+    \abs{\mathcal{M}(b_L \bar b_R \to \tau^+_R \tau^-_L)}^2 &\propto g_{Z'}^4 \zeta_\ell^2 \zeta_q^2 \left(1+\tanh \eta\right)^2, \\
+    \abs{\mathcal{M}(b_R \bar b_L \to \tau^+_R \tau^-_L)}^2 &\propto g_{Z'}^4 \zeta_\ell^2 \zeta_b^2 \left(1-\tanh \eta\right)^2, \\
+    \abs{\mathcal{M}(b_L \bar b_R \to \tau^+_L \tau^-_R)}^2 &\propto g_{Z'}^4 \zeta_\tau^2 \zeta_q^2 \left(1-\tanh \eta\right)^2, \\
+    \abs{\mathcal{M}(b_R \bar b_L \to \tau^+_L \tau^-_R)}^2 &\propto g_{Z'}^4 \zeta_\tau^2 \zeta_b^2 \left(1+\tanh \eta\right)^2.
+\end{align}
+Figure~\ref{fig:cross_section_zprime} shows the integrated production cross sections at $\sqrt{s} = 13.0\; \si{\tera\electronvolt}$ for a fixed set of couplings $g_{Z'} = 1.0$, $\zeta_\ell = 1.0$, $\zeta_q = 1.0$, $\zeta_b = 0.8$, and $\zeta_\tau = 0.6$. The cross section is sensitive to the choice of the couplings, and thus can be used to probe the underlying BSM model.
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=.95\linewidth]{Images/xs_Zprime_tau_tau.pdf}
+    \caption{Cross section for $\text{Z}'$ production decaying to $\tau^+\tau^-$ final states, showing different $\tau$ polarization configurations as a function of $\text{Z}'$ mass at $\sqrt{s}=13.0 \si{\tera\electronvolt}$. The couplings are fixed to $g_{Z'} = 1.0$, $\zeta_\ell = 1.0$, $\zeta_q = 1.0$, $\zeta_b = 0.8$, and $\zeta_\tau = 0.6$.}\label{fig:cross_section_zprime}
+\end{figure}
+The polarization asymmetry $\mathcal{P}_{\tau^-}$ of the $\tau$ lepton can be defined in a similar way as for the $U_1$ vector leptoquark, but now it is sensitive to the different couplings $\zeta_\ell$, $\zeta_q$, $\zeta_b$, and $\zeta_\tau$. The polarization asymmetry is given by:
+\begin{align}
+    \mathcal{P}_{\tau^-} &= \frac{\abs{\mathcal{M}_R}^2 - \abs{\mathcal{M}_L}^2}{\abs{\mathcal{M}_R}^2 + \abs{\mathcal{M}_L}^2} 
+    \\&= \frac{(1+\tanh \eta)^2\left(\zeta_\tau^2 \zeta_b^2- \zeta_\ell^2 \zeta_q^2\right)
+    +(1-\tanh \eta)^2\left(\zeta_\tau^2 \zeta_q^2 - \zeta_\ell^2 \zeta_b^2\right)}{
+        (1+\tanh \eta)^2\left(\zeta_\tau^2 \zeta_b^2+ \zeta_\ell^2 \zeta_q^2\right)
+        +(1-\tanh \eta)^2\left(\zeta_\tau^2 \zeta_q^2 + \zeta_\ell^2 \zeta_b^2\right)
+    },
+\end{align}
+where we have defined the right-handed and left-handed contributions as
+\begin{align}
+    \abs{\mathcal{M}_R}^2 &= \frac{1}{2}\left(\abs{\mathcal{M}(b_R \bar b_L \to \tau^+_L \tau^-_R)}^2 + \abs{\mathcal{M}(b_L \bar b_R \to \tau^+_L \tau^-_R)}^2\right), \\
+    \abs{\mathcal{M}_L}^2 &= \frac{1}{2}\left(\abs{\mathcal{M}(b_R \bar b_L \to \tau^+_R \tau^-_L)}^2 + \abs{\mathcal{M}(b_L \bar b_R \to \tau^+_R \tau^-_L)}^2\right).
+\end{align}
+Similarly, the polarization of $t\bar t$ observables in $Z'_{B-L}$ will depend on the couplings $\zeta_q$, $\zeta_b$, and $\zeta_t$, and can be used to measure the parameters of the underlying BSM model.
+
+
+\chapter{Two Higgs Doublet Model (Type-II)}
+
+\begin{figure}[!h]
+    \centering
+    \includegraphics[width=.6\linewidth]{Images/DY_scalar.pdf}
+    \caption{Caption}
+\end{figure}
+
+\begin{equation}
+    -\mathcal{L}=Y_{u 2} \bar{Q}_L \tilde{\Phi}_2 u_R+Y_{d 1} \bar{Q}_L \Phi_1 d_R+Y_{\ell 1} \bar{L}_L \Phi_1 e_R+\text { h.c. }
+\end{equation}
+where $Q_L^T=\left(u_L, d_L\right), L_L^T=\left(\nu_L, l_L\right), \widetilde{\Phi}_{1,2}=i \tau_2 \Phi_{1,2}^*$, and $Y_{u 2}, Y_{d 1,2}$ and $Y_{\ell 1,2}$ are $3 \times 3$ matrices in family space.
+
+We can obtain the Yukawa couplings
+
+$$
+\begin{aligned}
+-\mathcal{L}_Y= & \frac{m_f}{v} y_h^f h \bar{f} f+\frac{m_f}{v} y_H^f H \bar{f} f \\
+& -i \frac{m_u}{v} \kappa_u A \bar{u} \gamma_5 u+i \frac{m_d}{v} \kappa_d A \bar{d} \gamma_5 d+i \frac{m_{\ell}}{v} \kappa_{\ell} A \bar{\ell} \gamma_5 \ell \\
+& +H^{+} \bar{u} V_{\mathrm{CKM}}\left(\frac{\sqrt{2} m_d}{v} \kappa_d P_R-\frac{\sqrt{2} m_u}{v} \kappa_u P_L\right) d+\text { h.c. } \\
+& +\frac{\sqrt{2} m_{\ell}}{v} \kappa_{\ell} H^{+} \bar{\nu} P_R e+\text { h.c. }
+\end{aligned}
+$$
+where $y_h^f=\sin (\beta-\alpha)+\cos (\beta-\alpha) \kappa_f$ and $y_H^f=\cos (\beta-\alpha)-\sin (\beta-\alpha) \kappa_f$. The values of $\kappa_u=\cot\beta$, $\kappa_d=\tan\beta$, and $\kappa_{\ell}=\tan\beta$ for the type-II model.
+
+
+
+
+
+\chapter{Tau Polarization}
+
+The polarization estimation is based on the comparison between observed and simulated distributions defined in terms of energy or charge-related observables, asymmettry charge-energy. 
+
+\begin{equation*}
+    \gamma = \frac{a}{b}
+\end{equation*}
+
+Asymmetry templates were constructed to Delphes level using samples created with known polarization values, right and Left, in process $\gamma \rightarrow \tau^-_{R} \tau^+$ and $\gamma \rightarrow \tau^-_{L} \tau^+$. Initially, templates were created using discrete binning.
+
+In this approach, the observed distribution is compared to the interpolated templates corresponding to different polarization hypotheses, and a likelihood function is constructed based on the agreement between data and template for each polarization value. The best estimate of the polarization is obtained by minimizing the negative log-likelihood. 
+
+\begin{align*}
+L &= \prod_{i} \frac{T_i^{D_i} e^{-T_i}}{D_i!} \\[5pt]
+\ln L &= \sum_{i} \left[ D_i \ln T_i - T_i - \ln D_i! \right] \\[5pt]
+\end{align*}
+
+
+Where $T_{i}$ is the mean of a Poisson distribution, and $D_{i}$ is an observed value. Working with distributions normalized to unity and ignoring the term that includes a factorial
+
+\begin{equation*}
+    \ln L = \sum_{i} D_{i} \ln T_{i} + Cte
+\end{equation*}
+
+The expected bin content is modeled as a linear combination of the left-handed ($s^{L}$) and right-handed ($s^{R}$) contributions defined by the templates, with each component weighted according to the polarization $P(\tau)$.
+
+\begin{equation*}
+    \ln L = \sum_{i} D_{i} \ln \left[ \left( \frac{1- P(\tau)}{2}\right) s_{i}^{L} + \left( \frac{1 + P(\tau)}{2}\right) s_{i}^{R} \right] + Cte
+\end{equation*}
+
+Due to the strong sensitivity of the extracted polarization to the binning choice, minimizing $\ln L$, the method was extended to a continuous formulation via interpolation.
+
+
+\begin{equation*}
+    \ln L \approx \int D(x) \ln \left[ \left( \frac{1- P(\tau)}{2}\right) s^{L}(x) + \left( \frac{1 + P(\tau)}{2}\right) s^{R}(x) \right] dx
+\end{equation*}
+
+where $x$ represents an asymmetry-related observable and $D(x)$ its corresponding value. In this context, $D(x)$ can be interpreted as a distribution density, mediated by a Dirac delta function, $D(x) = \sum_{i}^{N}\delta(x-x_{i})$, giving us an estimate of $\ln L$ given by:
+
+\begin{equation*}
+        \ln L \approx \sum_{i}^{N}\ln \left[ \left( \frac{1- P(\tau)}{2}\right) s^{L}(x_{i}) + \left( \frac{1 + P(\tau)}{2}\right) s^{R}(x_{i}) \right] 
+\end{equation*}
+
+Finally, to evaluate the statistical uncertainty on the extracted polarization, we assume that the likelihood function around the minimum can be approximated by a quadratic (Gaussian) shape. Under this assumption, the variance is given by the inverse of the second derivative of the log-likelihood function evaluated at the minimum:
+
+\begin{equation*}
+    \sigma = \sqrt{\left( \frac{\partial^2 (\log \mathcal{L})}{\partial P^2} \Big|_{P = P_{\text{min}}} \right)^{-1}}
+\end{equation*}
+
+
+\chapter{Di-Tau Mass Reconstruction}
+
+In the development of the work, one of the most important aspects was the reconstruction of the invariant mass of the two $\tau^-$ leptons. Via the weak interaction, a tau can decay leptonically (~34\%), characterized by the presence of an electron or muon, or hadronically (~66\%), characterized by the presence of 1 or 3 charged traces known as prongs; therefore, the di tau decay can be divided into full leptonic (~ 11.6\%), semi leptonic  (~ 44.9\%), full hadronic (~ 43.6\%). Using 4-vectors, it is possible to define a system with 4 equations, 2 using the components of the missing traverse energy and  2 corresponding to the tau invariant mass:
+
+\begin{align*}
+    E_{T_{x}}^{\text{miss}} &= p_{\text{inv},1}\sin\theta_{\text{inv},1}\cos\phi_{\text{inv},1} + p_{\text{inv},2}\sin\theta_{\text{inv},2}\cos\phi_{\text{inv},2} \\
+    E_{T_{y}}^{\text{miss}} &= p_{\text{inv},1}\sin\theta_{\text{inv},1}\sin\phi_{\text{inv},1} + p_{\text{inv},2}\sin\theta_{\text{inv},2}\sin\phi_{\text{inv},2} \\
+    m_{\tau_1}^2 &= m_{\text{inv},1}^{2} + m_{\text{vis},1}^{2} + 2\sqrt{p_{\text{vis},1}^2 + m_{\text{vis},1}^2} \sqrt{p_{\text{inv},1}^2 + m_{\text{inv},1}^2} \\
+    m_{\tau_2}^2 &= m_{\text{inv},2}^{2} + m_{\text{vis},2}^{2} + 2\sqrt{p_{\text{vis},2}^2 + m_{\text{vis},2}^2} \sqrt{p_{\text{inv},2}^2 + m_{\text{inv},2}^2}
+\end{align*}
+
+Where inv refers to the production of neutrinos in the decay, and vis are particles that can be detected experimentally. Now, depending on the decay mode, the number of unknown variables are different, so different approximation methods are considered.
+
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Decay Channel} & \textbf{Neutrinos} & \textbf{Unknown var}\\
+\hline
+Hadronic-Hadronic (had-had) & 1 per $\tau$ (2 total) & $3 \times 2 = 6$  \\
+\hline
+Leptonic-Hadronic (lep-had) & 2 (lep) + 1 (had) = 3 & $3 \times 2 + 1 = 7$  \\
+\hline
+Leptonic-Leptonic (lep-lep) & 2 per $\tau$ (4 total) & $3 \times 2 + 2 = 8$  \\
+\hline
+\end{tabular}
+\caption{Comparison of the number of unknown variables and constraints in different $\tau^+\tau^-$ decay channels. The unknown variables correspond to the components of neutrino momenta and, when needed, the invariant mass of neutrino systems in leptonic decays.}
+\label{tab:tau_decay_constraints}
+\end{table}
+
+
+\begin{itemize}
+    \item \textbf{Visible Mass}: This method computes the invariant mass using only the visible decay products of the two $\tau$ leptons, so the contribution of neutrinos is being neglected; as a consequence, the real mass distribution is being underestimated.
+
+    
+    \item \textbf{Visible + MET}: By including the missing transverse energy (MET) in the calculation of a transverse mass, all MET is due to the presence of neutrinos. This approach gives a better modeling of the mass; however, it is not possible to reconstruct the angular distributions of each individual neutrino.
+    
+
+    
+    \item \textbf{Collinear Approximation}: This technique assumes that the neutrinos from each $\tau$ decay are collinear with the corresponding visible $\tau$ decay products, $\theta_{vis_{i}} = \theta_{inv_{i}}$ and $\phi_{vis_{i}} = \phi_{inv_{i}}$, allowing full reconstruction of the $\tau^-\tau^+$ invariant mass. It performs well in boosted topologies where the $\tau^-$ leptons are not back-to-back. However, it fails in the majority of events, where the collinearity condition is not satisfied, and is highly sensitive to MET resolution, often producing long tails in the reconstructed mass distribution.
+
+    
+    \item \textbf{Missing Mass Calculator (MMC)}: The MMC method overcomes the limitations of the previous approaches by scanning over the kinematically allowed phase space of neutrino momenta and assigning likelihood weights based on $\tau^-$ decay kinematics, including the angular correlations between visible and invisible decay products. This likelihood-based reconstruction yields a significantly improved mass resolution, independent of the $\tau^-\tau^+$ event topology. It is particularly effective in mitigating the impact of back-to-back $\tau$ decays and large MET uncertainties. 
+
+
+\end{itemize}
+
+
+\chapter{Models Comparison}
+
+
+\chapter{Models Interferences}
+
+
+\chapter{Results}\label{sec:results}
+
+
+
+\chapter{Discussion}\label{sec:discussion}
+
+
+
+\begin{acknowledgments}
+The authors would 
+\end{acknowledgments}
+
+
+\bibliographystyle{unsrt}
+\bibliography{references}
+
+
+\end{document}
